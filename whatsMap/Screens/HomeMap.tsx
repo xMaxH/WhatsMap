@@ -8,9 +8,12 @@ export default function HomeScreen({navigation})
 
     return (
         <View style={style1.container}>
-            <Pressable onPress={() => navigation.navigate('Profile')}>
-                <Text style={style1.text1}>
+            <Pressable>
+                <Text onPress={() => navigation.navigate('Profile')} style={style1.btn1}>
                     Profile
+                </Text>
+                <Text onPress={() => navigation.navigate('Login')} style={style1.btn1}>
+                    Login
                 </Text>
                 </Pressable>
         </View>

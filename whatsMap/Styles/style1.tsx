@@ -9,12 +9,32 @@
             {
                 flex: 1,
                 justifyContent: 'center',
-                alignItems: 'center',            },
+                alignItems: 'center',
+                backgroundColor:"black"
+            },
 
-        text1:
+        textInput:
         {
-            fontSize:15,
-            color:"red"
+            width:300,
+            borderWidth:0,
+            borderTopWidth:3,
+            fontSize:30,
+            borderColor:"black",
+            backgroundColor:"lightblue",
+            color:"black"
+        },
+
+        btn1:{
+            backgroundColor:"blue",
+            color:"red",
+            fontSize:25,
+            borderTopWidth:3,
+            borderColor:"black"
+        },
+
+        text1:{
+            color: "cyan",
+            fontSize:20,
         }
 
 
