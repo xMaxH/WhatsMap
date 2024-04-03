@@ -94,6 +94,9 @@ export default function Login({navigation})
                         <View style={styles.button}>
                             <Text style={styles.buttonTitle}>Login</Text>
                         </View>
+
+                        <SizedBox height={20}/>
+
                         <View style={styles.button}>
                             <Text onPress={() => navigation.navigate('Register')} style={styles.buttonTitle}>
                                 Register
