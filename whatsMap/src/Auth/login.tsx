@@ -23,24 +23,24 @@ function LoginFunc() {
                 >
                     <Text style={styles.title}>Login</Text>
 
-                    <SizedBox height={100} />
+                    <SizedBox height={100}/>
 
 
                     <TouchableOpacity>
                         <View style={styles.buttonGoogle}>
-                            <Text >Login with google</Text>
+                            <Text>Login with google</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <SizedBox height={50} />
+                    <SizedBox height={50}/>
 
                     <View style={styles.lineContainer}>
-                        <View style={styles.line} />
+                        <View style={styles.line}/>
                         <Text style={styles.text}>x</Text>
-                        <View style={styles.line} />
+                        <View style={styles.line}/>
                     </View>
 
-                    <SizedBox height={50} />
+                    <SizedBox height={50}/>
                     <Pressable>
                         <View style={styles.form}>
                             <Text style={styles.label}>Email</Text>
@@ -57,7 +57,7 @@ function LoginFunc() {
                         </View>
                     </Pressable>
 
-                    <SizedBox height={16} />
+                    <SizedBox height={16}/>
 
                     <Pressable>
                         <View style={styles.form}>
@@ -75,13 +75,13 @@ function LoginFunc() {
                         </View>
                     </Pressable>
 
-                    <SizedBox height={16} />
+                    <SizedBox height={16}/>
 
                     <View style={styles.forgotPasswordContainer}>
                         <Text style={styles.textButton}>Forgot password?</Text>
                     </View>
 
-                    <SizedBox height={16} />
+                    <SizedBox height={16}/>
 
                     <TouchableOpacity>
                         <View style={styles.button}>

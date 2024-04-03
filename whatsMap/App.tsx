@@ -1,9 +1,4 @@
-import React from 'react';
-import LoginFunc from "./src/Auth/login";
-import SignupFunc from "./src/Auth/signup";
+import {NavigationFile} from "./NavigationFile";
 
-const App: React.FC = () => {
-    return <LoginFunc />;
-};
-
-export default App;
+export default function App() {
+    return <NavigationFile/>;}
