@@ -9,7 +9,7 @@ export default function Register({navigation})
             <TextInput style={style1.textInput}>Username</TextInput>
             <TextInput style={style1.textInput}>Password</TextInput>
 
-            <Text onPress={() => navigation.navigate('Register')} style={style1.Btn1}>
+            <Text onPress={() => navigation.navigate('Register')} style={style1.text1}>
                 Register
             </Text>
         </View>
