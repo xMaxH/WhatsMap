@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { style1 } from "../Styles/style1";
 import loginStyle from "../Styles/authStyle";
-import SizedBox from "../src/components/SizedBox";
+import SizedBox from "../Styles/SizedBox";
 import React from "react";
 
 //Funksjon for loginn

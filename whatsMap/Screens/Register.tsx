@@ -11,7 +11,7 @@ import {
 import {style1} from "../Styles/style1";
 import {ImageBackground} from "react-native";
 import sinUpStyle from "../Styles/authStyle";
-import SizedBox from "../src/components/SizedBox";
+import SizedBox from "../Styles/SizedBox";
 import React from "react";
 
 export default function Register({navigation}) {
