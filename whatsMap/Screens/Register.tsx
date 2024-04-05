@@ -5,11 +5,10 @@ import {
     SafeAreaView,
     Text,
     TextInput,
-    TextInputComponent, TouchableOpacity,
+    TextInputComponent,
+    TouchableOpacity,
     View
 } from "react-native";
-import {style1} from "../Styles/style1";
-import {ImageBackground} from "react-native";
 import sinUpStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
 import React, { useState } from 'react';
@@ -34,7 +33,7 @@ export default function Register({navigation}) {
         try {
             const auth = getAuth(app);
             await createUserWithEmailAndPassword(auth, email, password);
-            // Navigate to home screen or login screen after successful registration
+            navigation.navigate('MAP');
         } catch (error) {
             const errorCode = error.code;
             const errorMessage = error.message;
