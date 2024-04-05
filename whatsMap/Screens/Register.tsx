@@ -13,6 +13,8 @@ import {ImageBackground} from "react-native";
 import sinUpStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
 import React, { useState } from 'react';
+import { app } from "../firebaseConfig";
+import {getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function Register({navigation}) {
 
@@ -30,12 +32,13 @@ export default function Register({navigation}) {
         }
 
         try {
-            // Replace with the authentication logic, e.g., Firebase
-            // const auth = getAuth();
-           //  await createUserWithEmailAndPassword(email, password);
+            const auth = getAuth(app);
+            await createUserWithEmailAndPassword(auth, email, password);
             // Navigate to home screen or login screen after successful registration
         } catch (error) {
-            console.error(error);
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error("ERROR", error);
         }
     };
 
