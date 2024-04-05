@@ -1,32 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { style1 } from '../Styles/style1';  // Use your style file
+import {Text, TouchableOpacity, View} from 'react-native';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { style1 } from '../Styles/style1';
 
-const Profile = () => {
+const Profile = ({navigation}) => {
     const [user, setUser] = useState(null);
+    const auth = getAuth();
 
+    // Checks if user is logged in
     useEffect(() => {
-        const auth = getAuth();
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
-            if (currentUser) {
-                // User is signed in, see docs for a list of available properties
-                setUser(currentUser);
-            } else {
-                // User is signed out
-                // Handle navigation or state update
-            }
+            setUser(currentUser);
         });
-
-        return unsubscribe; // Unsubscribe on unmount
+        return unsubscribe;
     }, []);
+
+    // Function for logout
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            navigation.navigate('Login');
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
+    };
 
     return (
         <View style={style1.container}>
-            {user ? (
+            {user ? ( // Displays user info
                 <View>
                     <Text style={style1.text1}>Welcome, {user.email}</Text>
-                    {/* Display other user info here */}
+                    <TouchableOpacity onPress={handleLogout} style={style1.btn1}>
+                        <Text style={style1.text1}>Logout</Text>
+                    </TouchableOpacity>
                 </View>
             ) : (
                 <Text style={style1.text1}>Not signed in</Text>
@@ -34,5 +40,4 @@ const Profile = () => {
         </View>
     );
 };
-
 export default Profile;
