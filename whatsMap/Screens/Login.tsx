@@ -11,20 +11,29 @@ import {
 import { style1 } from "../Styles/style1";
 import loginStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
-import React from "react";
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useState } from 'react';
 
-//Funksjon for loginn
+//Funksjon for login
 function login() {
-    console.log("Loginn")
+    console.log("Login")
 
 }
 
-
-
 export default function Login({navigation})
 {
-
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const styles = loginStyle
+    const login = async () => {
+        try {
+            const auth = getAuth();
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log("Logged in successfully");
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
+    };
     return (
         <View style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
@@ -78,6 +87,7 @@ export default function Login({navigation})
                                 secureTextEntry
                                 style={styles.textInput}
                                 textContentType="password"
+                                onChangeText={(text) => setPassword(text)}
                             />
                         </View>
                     </Pressable>
@@ -90,22 +100,24 @@ export default function Login({navigation})
 
                     <SizedBox height={16}/>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={login}>
                         <View style={styles.button}>
                             <Text style={styles.buttonTitle}>Login</Text>
                         </View>
-
+                    </TouchableOpacity>
                         <SizedBox height={20}/>
 
+                    <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                         <View style={styles.button}>
-                            <Text onPress={() => navigation.navigate('Register')} style={styles.buttonTitle}>
+                            <Text style={styles.buttonTitle}>
                                 Register
                             </Text>
                         </View>
-
-
-
                     </TouchableOpacity>
+
+
+
+
                 </KeyboardAvoidingView>
             </SafeAreaView>
         </View>
