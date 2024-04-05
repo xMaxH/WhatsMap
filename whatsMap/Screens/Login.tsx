@@ -8,17 +8,11 @@ import {
     TextInputComponent, TouchableOpacity,
     View
 } from "react-native";
-import { style1 } from "../Styles/style1";
 import loginStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
+import { app } from "../firebaseConfig";
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
-
-//Funksjon for login
-function login() {
-    console.log("Login")
-
-}
 
 export default function Login({navigation})
 {
@@ -27,9 +21,10 @@ export default function Login({navigation})
     const styles = loginStyle
     const login = async () => {
         try {
-            const auth = getAuth();
+            const auth = getAuth(app);
             await signInWithEmailAndPassword(auth, email, password);
             console.log("Logged in successfully");
+            navigation.navigate('MAP');
         } catch (error) {
             console.error("Login failed:", error);
         }
@@ -69,6 +64,8 @@ export default function Login({navigation})
                                 returnKeyType="next"
                                 style={styles.textInput}
                                 textContentType="username"
+                                value={email}
+                                onChangeText={(text) => setEmail(text)}
                             />
                         </View>
                     </Pressable>
@@ -87,6 +84,7 @@ export default function Login({navigation})
                                 secureTextEntry
                                 style={styles.textInput}
                                 textContentType="password"
+                                value={password}
                                 onChangeText={(text) => setPassword(text)}
                             />
                         </View>
