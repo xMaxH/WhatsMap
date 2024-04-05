@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {Modal, Text, TextInput, View, Button, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import {pinModal, style1} from "../Styles/style1";
-
+import {pinModal} from "../Styles/style1";
 export default function HomeScreen() {
 
     const [location, setLocation] = useState(null);
