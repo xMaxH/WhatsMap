@@ -67,7 +67,6 @@ export default function Register({navigation}) {
 
                             <TextInput
                                 autoCapitalize="none"
-                                //autoCompleteType="email"
                                 autoCorrect={false}
                                 keyboardType="email-address"
                                 returnKeyType="next"
@@ -87,7 +86,6 @@ export default function Register({navigation}) {
                             <TextInput
                                 autoCapitalize="none"
                                 secureTextEntry
-                                //autoCompleteType="email"
                                 autoCorrect={false}
                                 keyboardType="email-address"
                                 returnKeyType="next"
@@ -106,7 +104,6 @@ export default function Register({navigation}) {
 
                             <TextInput
                                 autoCapitalize="none"
-                                //autoCompleteType="password"
                                 autoCorrect={false}
                                 returnKeyType="done"
                                 secureTextEntry
