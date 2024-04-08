@@ -1,16 +1,47 @@
-import {Pressable, Text, View} from "react-native";
-import { style1 } from "../Styles/style1";
-import {ImageBackground} from "react-native";
+import React, {useEffect, useState} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
+import {getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
+import {style1} from '../Styles/style1';
+// @ts-ignore
+import { initializeAuth, getReactNativePersistence} from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import {app}from "../firebaseConfig"
+import {auth} from "./HomeMap"
 
-export default function Profile({navigation})
-{
-    const BackgroundImage1 = require("../assets/favicon.png");
+const Profile = ({navigation}) => {
+    const [user, setUser] = useState(null);
+
+    // Checks if user is logged in
+    useEffect(() => {
+        return onAuthStateChanged(auth,
+            currentUser => {
+                setUser(currentUser);
+            });
+    }, []);
+
+    // Function for logout
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            navigation.navigate('MAP');
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
+    };
 
     return (
         <View style={style1.container}>
-            <Text style={style1.text1}>
-                Hei
-            </Text>
+            {user ? ( // Displays user info
+                <View>
+                    <Text style={style1.text1}>Welcome, {user.email}</Text>
+                    <TouchableOpacity onPress={handleLogout} style={style1.btn1}>
+                        <Text style={style1.text1}>Logout</Text>
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                <Text style={style1.text1}>Not signed in</Text>
+            )}
         </View>
-    )
-}
+    );
+};
+export default Profile;
