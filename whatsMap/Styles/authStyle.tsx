@@ -66,7 +66,7 @@ function authStyles() {
             lineHeight: 20,
         },
         textInput: {
-            color: '#FFFFFF',
+            color: '#ff0000',
             flex: 1,
         },
         title: {

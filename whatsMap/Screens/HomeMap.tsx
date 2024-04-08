@@ -1,26 +1,40 @@
-
-import React, { useEffect, useState } from 'react';
-import {Modal, Text, TextInput, View, Button, StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
+import React, {useEffect, useState} from 'react';
+import {Button, Modal, Text, TextInput, TouchableWithoutFeedback, View} from 'react-native';
+import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {pinModal} from "../Styles/style1";
+// @ts-ignore
+import {getReactNativePersistence, initializeAuth, onAuthStateChanged} from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import {app} from "../firebaseConfig"
+
+export const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 export default function HomeScreen() {
 
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
-    const [selectedCoords, setSelectedCoords] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingMarker, setEditingMarker] = useState(null);
     const [tempTitle, setTempTitle] = useState('');
     const [tempDescription, setTempDescription] = useState('');
-    const isOwner = (marker) => {
-        // Placeholder for your actual ownership checking logic
-        // This should return true if the current user is the owner of the marker
-        // and false otherwise. For demonstration purposes, let's assume every marker belongs to the current user.
-        return false; // Replace this with your actual logic
-    };
 
+    // Google authentication
+    const [user, setUser] = useState(null);
+
+
+
+    useEffect(() => {
+        return onAuthStateChanged(auth, currentUser => {
+            setUser(currentUser);
+        });
+    }, []);
+
+    const isOwner = (marker) => {
+        return user && marker.userId === user.uid;
+    };
 
     useEffect(() => {
         (async () => {
@@ -37,14 +51,18 @@ export default function HomeScreen() {
 
     const handleMapPress = (event) => {
         const { latitude, longitude } = event.nativeEvent.coordinate;
-        const newMarker = {
-            id: Math.random().toString(),
-            coordinate: { latitude, longitude },
-            title: 'New Marker',
-            description: "Fill description",
-        };
-        setMarkers([...markers, newMarker]);
+        if (user) {
+            const newMarker = {
+                id: Math.random().toString(),
+                coordinate: { latitude, longitude },
+                title: 'New Marker',
+                description: "Fill description",
+                userId: user.uid, // Associate the marker with the current user's UID
+            };
+            setMarkers([...markers, newMarker]);
+        }
     };
+
     const pinPress = (markerId) => {
         const marker = markers.find((m) => m.id === markerId);
         if (marker) {
@@ -54,7 +72,6 @@ export default function HomeScreen() {
             setIsModalVisible(true);
         }
     };
-
 
     const saveMarkerInfo = () => {
         setMarkers(markers.map((m) => {
@@ -75,7 +92,6 @@ export default function HomeScreen() {
     };
 
     return (
-
         <View style={{ flex: 1 }}>
             <MapView
                 style={{ flex: 1 }}
@@ -114,7 +130,6 @@ export default function HomeScreen() {
                             <View style={pinModal.modalView}>
                                 {editingMarker && (
                                     <>
-
                                         {isOwner(editingMarker) ? (
                                             <>
                                                 <TextInput
@@ -146,7 +161,6 @@ export default function HomeScreen() {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-
         </View>
     );
 }
