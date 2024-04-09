@@ -19,7 +19,7 @@ export function NavigationFile() {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
         });
-        return unsubscribe; // Cleanup function
+        return unsubscribe; // Cleanupfunction
     }, []);
 
     return (
