@@ -49,6 +49,12 @@ export default function HomeScreen({ navigation }) {
     }, []);
 
     const handleMapPress = (event) => {
+        if (!user) {
+            // If you are not logged in it returns the function and you cannot place pin
+            alert('You must be logged in to place pins.');
+            return;
+        }
+
         const {latitude, longitude} = event.nativeEvent.coordinate;
         const newMarker = {
             id: Math.random().toString(),
