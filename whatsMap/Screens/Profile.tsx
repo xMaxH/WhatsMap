@@ -15,6 +15,7 @@ const Profile = ({navigation}) => {
         return unsubscribe;
     }, []);
 
+
     // Function for logout
     const handleLogout = async () => {
         try {

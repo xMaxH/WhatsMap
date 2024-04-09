@@ -5,6 +5,8 @@ import * as Location from 'expo-location';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import React, { useState, useEffect } from 'react';
 import { AntDesign } from '@expo/vector-icons';
+import { collection, addDoc, query, where, getDocs} from 'firebase/firestore';
+import { db } from "../firebaseConfig";
 
 export default function HomeScreen({ navigation }) {
     const [user, setUser] = useState(null);
@@ -48,22 +50,18 @@ export default function HomeScreen({ navigation }) {
         })();
     }, []);
 
-    const handleMapPress = (event) => {
-        if (!user) {
-            // If you are not logged in it returns the function and you cannot place pin
-            alert('You must be logged in to place pins.');
-            return;
+    useEffect(() => {
+        if (user) {
+            loadUserPinsFromFirestore().then(loadedPins => {
+                setMarkers(loadedPins);
+            });
+        } else {
+            setMarkers([]);
         }
+    }, [user]); // user is the authentication state variable
 
-        const {latitude, longitude} = event.nativeEvent.coordinate;
-        const newMarker = {
-            id: Math.random().toString(),
-            coordinate: {latitude, longitude},
-            title: 'New Marker',
-            description: "Fill description",
-        };
-        setMarkers([...markers, newMarker]);
-    };
+
+
     const pinPress = (markerId) => {
         const marker = markers.find((m) => m.id === markerId);
         if (marker) {
@@ -93,6 +91,65 @@ export default function HomeScreen({ navigation }) {
 
     const togglePins = () => {
         setShowPins(!showPins); // Toggle the state to show/hide pins
+    };
+
+    // Function to save a new pin
+    const savePinToFirestore = async (pin) => {
+        const auth = getAuth();
+        if (auth.currentUser) {
+            try {
+                await addDoc(collection(db, 'pins'), {
+                    ...pin,
+                    userId: auth.currentUser.uid,  // Include the user ID
+                    timestamp: new Date()         // Include the creation timestamp
+                });
+                console.log('Pin saved to Firestore');
+            } catch (error) {
+                console.error('Error saving pin:', error);
+            }
+        } else {
+            console.log('User not logged in. Pin not saved.');
+        }
+    };
+
+    const loadUserPinsFromFirestore = async () => {
+        const auth = getAuth();
+        if (auth.currentUser) {
+            const pinsQuery = query(collection(db, 'pins'), where('userId', '==', auth.currentUser.uid));
+            const querySnapshot = await getDocs(pinsQuery);
+            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } else {
+            console.log('User not logged in. No pins loaded.');
+            return [];
+        }
+    };
+
+    // This might be in your logout function
+
+    const handleMapPress = (event) => {
+        if (!user) {
+            // If you are not logged in it returns the function and you cannot place pin
+            alert('You must be logged in to place pins.');
+            return;
+        }
+        if (user) {
+        const {latitude, longitude} = event.nativeEvent.coordinate;
+        const newMarker = {
+            id: Math.random().toString(),
+            coordinate: {latitude, longitude},
+            title: 'New Marker',
+            description: "Fill description",
+        };
+        savePinToFirestore(newMarker).then(() => {
+            console.log('Pin saved to Firestore');
+            setMarkers(prevMarkers => [...prevMarkers, newMarker]);
+        }).catch(error => {
+            console.error('Failed to save pin:', error);
+        });
+    } else {
+        // Handle the case where there is no logged in user
+        console.log('User must be logged in to add pins.');
+    }
     };
 
     return (
