@@ -5,7 +5,6 @@ import {
     SafeAreaView,
     Text,
     TextInput,
-    TextInputComponent,
     TouchableOpacity,
     View
 } from "react-native";
@@ -35,8 +34,6 @@ export default function Register({navigation}) {
             await createUserWithEmailAndPassword(auth, email, password);
             navigation.navigate('MAP');
         } catch (error) {
-            const errorCode = error.code;
-            const errorMessage = error.message;
             console.error("ERROR", error);
         }
     };

@@ -1,11 +1,10 @@
 import {
-    Button,
     KeyboardAvoidingView, Platform,
     Pressable,
     SafeAreaView,
     Text,
     TextInput,
-    TextInputComponent, TouchableOpacity,
+    TouchableOpacity,
     View
 } from "react-native";
 import loginStyle from "../Styles/authStyle";
@@ -19,7 +18,7 @@ export default function Login({navigation})
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const styles = loginStyle
-    const login = async () => {
+    const login = async () => { // Function to login
         try {
             const auth = getAuth(app);
             await signInWithEmailAndPassword(auth, email, password);

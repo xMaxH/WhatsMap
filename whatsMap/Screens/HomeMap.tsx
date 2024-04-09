@@ -1,4 +1,4 @@
-import { Pressable, Text, View, ActivityIndicator, Modal, TextInput, Button, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { Pressable, Text, View, Modal, TextInput, Button, TouchableWithoutFeedback } from "react-native";
 import { style1, pinModal } from "../Styles/style1";
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -10,10 +10,9 @@ import { db } from "../firebaseConfig";
 
 export default function HomeScreen({ navigation }) {
     const [user, setUser] = useState(null);
-    const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [setLocation] = useState(null);
+    const [setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
-    const [selectedCoords, setSelectedCoords] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingMarker, setEditingMarker] = useState(null);
     const [tempTitle, setTempTitle] = useState('');
@@ -50,19 +49,19 @@ export default function HomeScreen({ navigation }) {
         })();
     }, []);
 
-    useEffect(() => {
-        if (user) {
+    useEffect(() => { // runs the load-user-pins function
+        if (user) { // If the user is logged in it shows the users pins
             loadUserPinsFromFirestore().then(loadedPins => {
                 setMarkers(loadedPins);
             });
-        } else {
+        } else { // If not logged in no pins are displayed
             setMarkers([]);
         }
     }, [user]); // user is the authentication state variable
 
 
 
-    const pinPress = (markerId) => {
+    const pinPress = (markerId) => { // Pressing a pin shows the title and description
         const marker = markers.find((m) => m.id === markerId);
         if (marker) {
             setEditingMarker(marker);
@@ -93,7 +92,7 @@ export default function HomeScreen({ navigation }) {
         setShowPins(!showPins); // Toggle the state to show/hide pins
     };
 
-    // Function to save a new pin
+    // Function that saves new pins added to the specific user by using firestore
     const savePinToFirestore = async (pin) => {
         const auth = getAuth();
         if (auth.currentUser) {
@@ -112,9 +111,9 @@ export default function HomeScreen({ navigation }) {
         }
     };
 
-    const loadUserPinsFromFirestore = async () => {
+    const loadUserPinsFromFirestore = async () => { // Function to load pins for the specific user in firestore
         const auth = getAuth();
-        if (auth.currentUser) {
+        if (auth.currentUser) { //
             const pinsQuery = query(collection(db, 'pins'), where('userId', '==', auth.currentUser.uid));
             const querySnapshot = await getDocs(pinsQuery);
             return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -124,15 +123,13 @@ export default function HomeScreen({ navigation }) {
         }
     };
 
-    // This might be in your logout function
-
     const handleMapPress = (event) => {
         if (!user) {
             // If you are not logged in it returns the function and you cannot place pin
             alert('You must be logged in to place pins.');
             return;
         }
-        if (user) {
+        if (user) { // If the user is logged in you can place marker with a title and description
         const {latitude, longitude} = event.nativeEvent.coordinate;
         const newMarker = {
             id: Math.random().toString(),
@@ -140,14 +137,14 @@ export default function HomeScreen({ navigation }) {
             title: 'New Marker',
             description: "Fill description",
         };
-        savePinToFirestore(newMarker).then(() => {
+        savePinToFirestore(newMarker).then(() => { // Saves the pin to the firestore cloud storage
             console.log('Pin saved to Firestore');
             setMarkers(prevMarkers => [...prevMarkers, newMarker]);
         }).catch(error => {
             console.error('Failed to save pin:', error);
         });
     } else {
-        // Handle the case where there is no logged in user
+        // Handles the case where there is no logged in user
         console.log('User must be logged in to add pins.');
     }
     };
