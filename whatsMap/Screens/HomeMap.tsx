@@ -1,28 +1,29 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Modal, Pressable, Text, TextInput, TouchableWithoutFeedback, View} from 'react-native';
-import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import React, { useEffect, useState } from 'react';
+import { Alert, Button, Modal, Pressable, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import {pinModal, style1} from "../Styles/style1";
+import { pinModal } from "../Styles/style1";
 // @ts-ignore
-import {getReactNativePersistence,getAuth, initializeAuth, onAuthStateChanged} from 'firebase/auth';
+import { getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import {app, db} from "../firebaseConfig"
-import {addDoc, collection, getDocs, query, where} from 'firebase/firestore';
-import {AntDesign} from '@expo/vector-icons';
-
-
+import { app, db } from "../firebaseConfig";
+import { addDoc, updateDoc, doc, collection, getDocs } from 'firebase/firestore';
+import { AntDesign } from '@expo/vector-icons';
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });
-export default function HomeScreen({navigation}) {
+
+export default function HomeScreen() {
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [newPinModalVisible, setNewPinModalVisible] = useState(false); // New state for creating pin modal visibility
     const [editingMarker, setEditingMarker] = useState(null);
     const [tempTitle, setTempTitle] = useState('');
     const [tempDescription, setTempDescription] = useState('');
+    const [newPinCoordinates, setNewPinCoordinates] = useState(null); // New state for storing coordinates of the new pin
     const [user, setUser] = useState(null);
     const Grimstad = {
         latitude: 58.3405,
@@ -33,15 +34,11 @@ export default function HomeScreen({navigation}) {
 
     const [showPins, setShowPins] = useState(true);
 
-
-
-
-
     useEffect(() => {
         return onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
         });
-    }, []);//AUTH
+    }, []);
 
     useEffect(() => {
         (async () => {
@@ -54,113 +51,143 @@ export default function HomeScreen({navigation}) {
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
         })();
-    }, []); //YOUR LOCATION
+    }, []);
 
-    useEffect(() => { // runs the load-user-pins function
-        if (user) { // If the user is logged in it shows the users pins
+    useEffect(() => {
+        if (user) {
             loadUserPinsFromFirestore().then(loadedPins => {
                 setMarkers(loadedPins);
             });
-        } else { // If not logged in no pins are displayed
+        } else {
             setMarkers([]);
         }
-    }, [user]); // user is the authentication state variable
+    }, [user]);
 
     const isOwner = (marker) => {
         return user && marker.userId === user.uid;
     };
+
     const pinPress = (markerId) => {
         const marker = markers.find((m) => m.id === markerId);
-        if (marker) {
+        if (marker && isOwner(marker)) {
             setEditingMarker(marker);
             setTempTitle(marker.title);
             setTempDescription(marker.description);
             setIsModalVisible(true);
-        }
-    };
-    const saveMarkerInfo = () => {
-        setMarkers(markers.map((m) => {
-            if (m.id === editingMarker.id) {
-                return { ...m, title: tempTitle, description: tempDescription };
-            }
-            return m;
-        }));
-        setIsModalVisible(false);
-        setEditingMarker(null);
-    };
-    const handleMapPress = (event) => {
-        if (!user) {
-            // If you are not logged in it returns the function and you cannot place pin
-            alert('You must be logged in to place pins.');
-            return;
-        }
-        if (user) { // If the user is logged in you can place marker with a title and description
-            const {latitude, longitude} = event.nativeEvent.coordinate;
-            const newMarker = {
-                id: Math.random().toString(),
-                coordinate: {latitude, longitude},
-                title: 'New Marker',
-                description: "Fill description",
-            };
-            savePinToFirestore(newMarker).then(() => { // Saves the pin to the firestore cloud storage
-                console.log('Pin saved to Firestore');
-                setMarkers(prevMarkers => [...prevMarkers, newMarker]);
-            }).catch(error => {
-                console.error('Failed to save pin:', error);
-            });
         } else {
-            // Handles the case where there is no logged in user
-            console.log('User must be logged in to add pins.');
+            alert('You can only edit your own pins.');
         }
     };
 
+    const saveMarkerInfo = () => {
+        const updatedPinData = {
+            title: tempTitle,
+            description: tempDescription,
+        };
+
+        if (editingMarker && editingMarker.id) {
+            updatePinInFirestore(editingMarker.id, updatedPinData).then(() => {
+                const updatedMarkers = markers.map(marker => {
+                    if (marker.id === editingMarker.id) {
+                        return { ...marker, ...updatedPinData };
+                    }
+                    return marker;
+                });
+
+                setMarkers(updatedMarkers);
+                setIsModalVisible(false);
+                setEditingMarker(null);
+                setTempTitle('');
+                setTempDescription('');
+            }).catch(error => {
+                console.error('Failed to update pin:', error);
+            });
+        }
+    };
+
+    // Updated function with modal for new pin creation
+    const handleMapPress = (event) => {
+        if (!user) {
+            alert('You must be logged in to place pins.');
+            return;
+        }
+        const { latitude, longitude } = event.nativeEvent.coordinate;
+        setNewPinCoordinates({ latitude, longitude });
+        setNewPinModalVisible(true); // Show modal for entering new pin details
+    };
+
+    // New function to handle saving the new pin
+    const handleSaveNewPin = () => {
+        if (!newPinCoordinates) return;
+        const newMarker = {
+            coordinate: newPinCoordinates,
+            title: tempTitle,
+            description: tempDescription,
+            userId: user.uid,
+        };
+        savePinToFirestore(newMarker).then((savedPinWithUserId) => {
+            setMarkers(prevMarkers => [...prevMarkers, savedPinWithUserId]);
+            // Reset the form and hide the modal
+            setNewPinModalVisible(false);
+            setTempTitle('');
+            setTempDescription('');
+            setNewPinCoordinates(null);
+        }).catch(error => {
+            console.error('Failed to save pin:', error);
+        });
+    };
+
+    const savePinToFirestore = async (pin) => {
+        if (!user) {
+            console.log('User not logged in. Pin not saved.');
+            return;
+        }
+        try {
+            const userPinsCollectionRef = collection(db, 'users', user.uid, 'pins');
+            const pinWithUserId = { ...pin, userId: user.uid }; // Ensure userId is correctly attached
+            const docRef = await addDoc(userPinsCollectionRef, pinWithUserId);
+            console.log('Pin saved to Firestore with ID:', docRef.id);
+            return { ...pinWithUserId, id: docRef.id };
+        } catch (error) {
+            console.error('Error saving pin:', error);
+        }
+    };
     const togglePins = () => {
         setShowPins(!showPins); // Toggle the state to show/hide pins
     };
-    // Function that saves new pins added to the specific user by using firestore
-    const savePinToFirestore = async (pin) => {
-        const auth = getAuth();
-        if (auth.currentUser) {
-            try {
-                await addDoc(collection(db, 'pins'), {
-                    ...pin,
-                    userId: auth.currentUser.uid,  // Include the user ID
-                    timestamp: new Date()         // Include the creation timestamp
-                });
-                console.log('Pin saved to Firestore');
-            } catch (error) {
-                console.error('Error saving pin:', error);
-            }
-        } else {
-            console.log('User not logged in. Pin not saved.');
-        }
-    };
-    const loadUserPinsFromFirestore = async () => { // Function to load pins for the specific user in firestore
-        const auth = getAuth();
-        if (auth.currentUser) { //
-            const pinsQuery = query(collection(db, 'pins'), where('userId', '==', auth.currentUser.uid));
-            const querySnapshot = await getDocs(pinsQuery);
-            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        } else {
+
+    const loadUserPinsFromFirestore = async () => {
+        if (!user) {
             console.log('User not logged in. No pins loaded.');
+            return [];
+        }
+        try {
+            const userPinsCollectionRef = collection(db, 'users', user.uid, 'pins');
+            const querySnapshot = await getDocs(userPinsCollectionRef);
+            return querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        } catch (error) {
+            console.error('Error loading pins:', error);
             return [];
         }
     };
 
+    const updatePinInFirestore = async (pinId, updatedPinData) => {
+        if (!user) {
+            console.error("User must be logged in to update pins.");
+            return;
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        try {
+            const pinRef = doc(db, 'users', user.uid, 'pins', pinId);
+            await updateDoc(pinRef, updatedPinData);
+            console.log('Pin updated successfully in Firestore');
+        } catch (error) {
+            console.error('Error updating pin:', error);
+        }
+    };
 
     return (
         <View style={{ flex: 1 }}>
@@ -176,7 +203,7 @@ export default function HomeScreen({navigation}) {
                         key={marker.id}
                         coordinate={marker.coordinate}
                         title={marker.title}
-                        onCalloutPress={() => pinPress(marker.id)}
+                        onCalloutPress={() => isOwner(marker) ? pinPress(marker.id) : alert('You can only edit your pins.')}
                     >
                         <Callout>
                             <View>
@@ -188,27 +215,23 @@ export default function HomeScreen({navigation}) {
                 ))}
             </MapView>
 
-
             <View style={{
                 position: 'absolute',
                 top: 10,
                 right: 350,
                 alignItems: 'flex-end'
             }}>
-                {
-                    <Pressable onPress={togglePins}>
-                        <AntDesign name="retweet" size={40} color="black" />
-                    </Pressable>
-                }
+                <Pressable onPress={togglePins}>
+                    <AntDesign name="retweet" size={40} color="black" />
+                </Pressable>
             </View>
 
+            {/* Existing Modal for Editing Pins */}
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={isModalVisible}
-                onRequestClose={() => {
-                    setIsModalVisible(!isModalVisible);
-                }}
+                onRequestClose={() => setIsModalVisible(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
                     <View style={pinModal.fullScreenOverlay}>
@@ -220,11 +243,13 @@ export default function HomeScreen({navigation}) {
                                             <>
                                                 <TextInput
                                                     style={pinModal.input}
+                                                    placeholder="Title"
                                                     onChangeText={setTempTitle}
                                                     value={tempTitle}
                                                 />
                                                 <TextInput
                                                     style={pinModal.input}
+                                                    placeholder="Description"
                                                     onChangeText={setTempDescription}
                                                     value={tempDescription}
                                                 />
@@ -237,11 +262,48 @@ export default function HomeScreen({navigation}) {
                                             <>
                                                 <Text style={pinModal.input}>{tempTitle}</Text>
                                                 <Text style={pinModal.input}>{tempDescription}</Text>
-                                                {/* Optionally, display additional information indicating that the user cannot edit this marker */}
                                             </>
                                         )}
                                     </>
                                 )}
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
+            {/* New Modal for Creating New Pins */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={newPinModalVisible}
+                onRequestClose={() => setNewPinModalVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setNewPinModalVisible(false)}>
+                    <View style={pinModal.fullScreenOverlay}>
+                        <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                            <View style={pinModal.modalView}>
+                                <TextInput
+                                    style={pinModal.input}
+                                    placeholder="Title"
+                                    onChangeText={setTempTitle}
+                                    value={tempTitle}
+                                />
+                                <TextInput
+                                    style={pinModal.input}
+                                    placeholder="Description"
+                                    onChangeText={setTempDescription}
+                                    value={tempDescription}
+                                />
+                                <Button
+                                    title="Save Pin"
+                                    onPress={handleSaveNewPin}
+                                />
+                                <Button
+                                    title="Cancel"
+                                    color="red"
+                                    onPress={() => setNewPinModalVisible(false)}
+                                />
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
