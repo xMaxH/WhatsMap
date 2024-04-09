@@ -3,7 +3,6 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
 import {style1} from '../Styles/style1';
 // @ts-ignore
-import { initializeAuth, getReactNativePersistence} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {app}from "../firebaseConfig"
 import {auth} from "./HomeMap"
@@ -12,12 +11,10 @@ const Profile = ({navigation}) => {
     const [user, setUser] = useState(null);
 
     // Checks if user is logged in
-    useEffect(() => {
-        return onAuthStateChanged(auth,
-            currentUser => {
+    useEffect(() =>
+        onAuthStateChanged(auth, currentUser => {
                 setUser(currentUser);
-            });
-    }, []);
+            }), []);
 
     // Function for logout
     const handleLogout = async () => {
