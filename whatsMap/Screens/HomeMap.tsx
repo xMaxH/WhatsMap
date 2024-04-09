@@ -4,10 +4,10 @@ import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import React, { useState, useEffect } from 'react';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function HomeScreen({ navigation }) {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Loading state to track auth status checking
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
@@ -16,6 +16,8 @@ export default function HomeScreen({ navigation }) {
     const [editingMarker, setEditingMarker] = useState(null);
     const [tempTitle, setTempTitle] = useState('');
     const [tempDescription, setTempDescription] = useState('');
+    const [showPins, setShowPins] = useState(true);
+
     const isOwner = (marker) => {
         // Placeholder for your actual ownership checking logic
         // This should return true if the current user is the owner of the marker
@@ -27,7 +29,6 @@ export default function HomeScreen({ navigation }) {
         const auth = getAuth();
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-            setLoading(false);
         });
 
         // Returns the function to unsubscribe from the auth listener on component unmount
@@ -84,6 +85,10 @@ export default function HomeScreen({ navigation }) {
         longitudeDelta: 0.02,
     };
 
+    const togglePins = () => {
+        setShowPins(!showPins); // Toggle the state to show/hide pins
+    };
+
     return (
         <View style={{flex: 1}}>
             <MapView
@@ -93,7 +98,7 @@ export default function HomeScreen({ navigation }) {
                 showsUserLocation={true}
                 region={Grimstad}
             >
-                {markers.map((marker) => (
+                {showPins && markers.map((marker) => (
                     <Marker
                         key={marker.id}
                         coordinate={marker.coordinate}
@@ -132,9 +137,13 @@ export default function HomeScreen({ navigation }) {
                         <Text style={style1.text1}>Login</Text>
                     </Pressable>
                 )}
+                {user && (
+                <Pressable onPress={togglePins}>
+                    <AntDesign name="retweet" size={40} color="black" />
+                </Pressable>
+                )}
             </View>
 
-            {/* Modal Component */}
             <Modal
                 animationType="slide"
                 transparent={true}
