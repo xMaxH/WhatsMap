@@ -5,18 +5,39 @@ import {
     SafeAreaView,
     Text,
     TextInput,
-    TextInputComponent, TouchableOpacity,
+    TouchableOpacity,
     View
 } from "react-native";
-import {style1} from "../Styles/style1";
-import {ImageBackground} from "react-native";
 import sinUpStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
-import React from "react";
+import React, { useState } from 'react';
+import { app } from "../firebaseConfig";
+import {getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function Register({navigation}) {
 
     const styles = sinUpStyle
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    // Function to handle user registration
+    const handleRegister = async () => {
+        if (password !== confirmPassword) {
+            alert('Passwords do not match.');
+            return;
+        }
+
+        try {
+            const auth = getAuth(app);
+            await createUserWithEmailAndPassword(auth, email, password);
+            navigation.navigate('MAP');
+        } catch (error) {
+            console.error("ERROR", error);
+        }
+    };
+
     return (
         <View style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
@@ -26,8 +47,7 @@ export default function Register({navigation}) {
                 >
                     <Text style={styles.title}>Register New Account</Text>
 
-                    <SizedBox height={100}/>
-
+                    <SizedBox height={0}/>
 
                     <SizedBox height={50}/>
 
@@ -44,12 +64,12 @@ export default function Register({navigation}) {
 
                             <TextInput
                                 autoCapitalize="none"
-                                //autoCompleteType="email"
                                 autoCorrect={false}
                                 keyboardType="email-address"
                                 returnKeyType="next"
                                 style={styles.textInput}
                                 textContentType="username"
+                                onChangeText={(text) => setEmail(text)}
                             />
                         </View>
                     </Pressable>
@@ -62,12 +82,13 @@ export default function Register({navigation}) {
 
                             <TextInput
                                 autoCapitalize="none"
-                                //autoCompleteType="email"
+                                secureTextEntry
                                 autoCorrect={false}
                                 keyboardType="email-address"
                                 returnKeyType="next"
                                 style={styles.textInput}
-                                textContentType="username"
+                                textContentType="password"
+                                onChangeText={(text) => setPassword(text)}
                             />
                         </View>
                     </Pressable>
@@ -80,24 +101,27 @@ export default function Register({navigation}) {
 
                             <TextInput
                                 autoCapitalize="none"
-                                //autoCompleteType="password"
                                 autoCorrect={false}
                                 returnKeyType="done"
                                 secureTextEntry
                                 style={styles.textInput}
                                 textContentType="password"
+                                onChangeText={(text) => setConfirmPassword(text)}
                             />
                         </View>
                     </Pressable>
 
                     <SizedBox height={16}/>
 
+
+
                     <SizedBox height={16}/>
 
-                    <View style={styles.button}>
-                        <Text style={styles.buttonTitle}>Submit</Text>
-                    </View>
-
+                    <TouchableOpacity onPress={handleRegister}>
+                        <View style={styles.button}>
+                            <Text style={styles.buttonTitle}>Submit</Text>
+                        </View>
+                    </TouchableOpacity>
 
                 </KeyboardAvoidingView>
             </SafeAreaView>
