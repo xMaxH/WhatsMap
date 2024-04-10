@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 
-export const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyDsoHGDopPslNJ0Ck3U7vkih1uQwdniKw4",
     authDomain: "whatsmap-c8cd1.firebaseapp.com",
     projectId: "whatsmap-c8cd1",

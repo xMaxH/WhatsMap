@@ -13,8 +13,8 @@ const Profile = ({navigation}) => {
     // Checks if user is logged in
     useEffect(() =>
         onAuthStateChanged(auth, currentUser => {
-                setUser(currentUser);
-            }), []);
+            setUser(currentUser);
+        }), []);
 
     // Function for logout
     const handleLogout = async () => {
