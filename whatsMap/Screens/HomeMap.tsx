@@ -7,7 +7,7 @@ import { pinModal } from "../Styles/style1";
 import { getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
-import { addDoc, updateDoc, doc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, updateDoc, doc,deleteDoc, collection, getDocs } from 'firebase/firestore';
 import { AntDesign } from '@expo/vector-icons';
 
 export const auth = initializeAuth(app, {
@@ -189,6 +189,29 @@ export default function HomeScreen() {
         }
     };
 
+    const deletePinFromFirestore = async (pinId) => {
+        if (!user) {
+            console.error("User must be logged in to delete pins.");
+            return;
+        }
+
+        try {
+            const pinRef = doc(db, 'users', user.uid, 'pins', pinId);
+            await deleteDoc(pinRef);
+            console.log('Pin deleted successfully from Firestore');
+        } catch (error) {
+            console.error('Error deleting pin:', error);
+        }
+    };
+    const handleDeletePin = (pinId) => {
+        deletePinFromFirestore(pinId).then(() => {
+            setMarkers(markers.filter(marker => marker.id !== pinId));
+            setIsModalVisible(false);
+        }).catch(error => {
+            console.error('Failed to delete pin:', error);
+        });
+    };
+
     return (
         <View style={{ flex: 1 }}>
             <MapView
@@ -255,7 +278,13 @@ export default function HomeScreen() {
                                                 />
                                                 <Button
                                                     title="Save"
+                                                    color="green"
                                                     onPress={saveMarkerInfo}
+                                                />
+                                                <Button
+                                                    title="Delete pin"
+                                                    color="red"
+                                                    onPress={() => handleDeletePin(editingMarker.id)}
                                                 />
                                             </>
                                         ) : (
@@ -297,6 +326,7 @@ export default function HomeScreen() {
                                 />
                                 <Button
                                     title="Save Pin"
+                                    color="green"
                                     onPress={handleSaveNewPin}
                                 />
                                 <Button
