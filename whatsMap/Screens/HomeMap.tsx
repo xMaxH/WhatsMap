@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Modal, Pressable, Text, TextInput, TouchableWithoutFeedback, View, TouchableOpacity } from 'react-native';
-import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { Alert, Button, Modal, Pressable, Text, TextInput, TouchableWithoutFeedback, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import MapView, { Callout, Marker, PROVIDER_GOOGLE,  } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { pinModal } from "../Styles/style1";
+import {pinModal, style1} from "../Styles/style1";
 // @ts-ignore
 import { getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
@@ -29,6 +29,7 @@ export default function HomeScreen() {
     const [tempDescription, setTempDescription] = useState('');
     const [newPinCoordinates, setNewPinCoordinates] = useState(null); // New state for storing coordinates of the new pin
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false); // Add loading state
     //const [selectedCategory, setSelectedCategory] = useState('');
     const Grimstad = {
         latitude: 58.3405,
@@ -128,24 +129,24 @@ export default function HomeScreen() {
     };
 
     // New function to handle saving the new pin
-    const handleSaveNewPin = () => {
+    const handleSaveNewPin = async () => {
         if (!newPinCoordinates) return;
-        const newMarker = {
-            coordinate: newPinCoordinates,
-            title: tempTitle,
-            description: tempDescription,
-            userId: user.uid,
-        };
-        savePinToFirestore(newMarker).then((savedPinWithUserId) => {
+        setNewPinModalVisible(false);
+        setLoading(true); // Set loading true when operation begins
+        try {
+            const newMarker = {
+                coordinate: newPinCoordinates,
+                title: tempTitle,
+                description: tempDescription,
+                userId: user.uid,
+            };
+            const savedPinWithUserId = await savePinToFirestore(newMarker);
             setMarkers(prevMarkers => [...prevMarkers, savedPinWithUserId]);
-            // Reset the form and hide the modal
-            setNewPinModalVisible(false);
-            setTempTitle('');
-            setTempDescription('');
-            setNewPinCoordinates(null);
-        }).catch(error => {
+        } catch (error) {
             console.error('Failed to save pin:', error);
-        });
+        } finally {
+            setLoading(false); // Set loading false after operation
+        }
     };
 
     const savePinToFirestore = async (pin) => {
@@ -214,15 +215,18 @@ export default function HomeScreen() {
             console.error('Error deleting pin:', error);
         }
     };
-    const handleDeletePin = (pinId) => {
-        deletePinFromFirestore(pinId).then(() => {
-            setMarkers(markers.filter(marker => marker.id !== pinId));
+    const handleDeletePin = async (pinId) => {
+        try {
             setIsModalVisible(false);
-        }).catch(error => {
+            setLoading(true);
+            await deletePinFromFirestore(pinId);
+            setMarkers(markers.filter(marker => marker.id !== pinId));
+        } catch (error) {
             console.error('Failed to delete pin:', error);
-        });
+        } finally {
+            setLoading(false);
+        }
     };
-
     return (
         <View style={{ flex: 1 }}>
             <MapView
@@ -248,6 +252,13 @@ export default function HomeScreen() {
                     </Marker>
                 ))}
             </MapView>
+
+            {loading && (
+                <View style={style1.loadingOverlay}>
+                    <ActivityIndicator size={300} color="#0175FF" />
+                </View>
+            )}
+
 
             <View style={{
                 position: 'absolute',
