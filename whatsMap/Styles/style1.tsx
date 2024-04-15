@@ -26,18 +26,31 @@ const style1 = StyleSheet.create({
         },
 
     btn1:{
-        backgroundColor:"blue",
+        backgroundColor:"lightblue",
         color:"red",
         fontSize:25,
-        borderTopWidth:3,
-        borderColor:"black"
+        width: 100,
+        height:40,
+        //borderTopWidth:3,
+        //borderColor:"black"
     },
 
     text1:{
-        color: "cyan",
+        color: "black",
         fontSize:20,
-    }
+        height: 350,
+    },
+    text2:{
+        textAlign:"center",
+    },
 
+    Logoutbtn: {
+        alignItems: 'center',
+        backgroundColor: '#4882C5',
+        borderRadius: 8,
+        height: 48,
+        justifyContent: 'center',
+    },
 
 });
 
@@ -50,9 +63,28 @@ const pinModal = StyleSheet.create(
             alignItems: 'center',
             backgroundColor: 'rgba(0,0,0,0.5)',
         },
+        titletext: {
+            fontSize: 35,
+            fontWeight: 'bold',
+        },
+        subtitletext: {
+            fontSize: 15,
+            fontWeight: 'bold',
+        },
+        buttonsavecanellineup: {
+            flexDirection: 'row',
+            //justifyContent: 'space-between',
+        },
+        buttonspacebetween: {
+            marginHorizontal: 10,
+            marginTop: 5
+        },
+        iconpin: {
+            flexDirection: "row",
+        },
         modalView: {
             margin: 20,
-            backgroundColor: "white",
+            backgroundColor: "#BEDFED",
             borderRadius: 20,
             padding: 35,
             alignItems: "center",
@@ -66,12 +98,21 @@ const pinModal = StyleSheet.create(
             elevation: 5,
             width: '80%',
         },
+        inputdescription: {
+            height: 90,
+            margin: 12,
+            borderWidth: 1,
+            padding: 10,
+            width: 250,
+            backgroundColor: 'white',
+        },
         input: {
             height: 40,
             margin: 12,
             borderWidth: 1,
             padding: 10,
             width: 250,
+            backgroundColor: 'white',
         },
         // Other styles...
     });
