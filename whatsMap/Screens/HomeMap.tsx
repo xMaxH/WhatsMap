@@ -8,8 +8,6 @@ import { getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
 
-import { addDoc, updateDoc, doc, collection, getDocs } from 'firebase/firestore';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
 import {PushpinOutlined} from "@ant-design/icons";
 
 import { addDoc, updateDoc, doc,deleteDoc, collection, getDocs } from 'firebase/firestore';
@@ -295,16 +293,22 @@ export default function HomeScreen() {
                                                     onChangeText={setTempDescription}
                                                     value={tempDescription}
                                                 />
-                                                <Button
-                                                    title="Save"
-                                                    color="green"
-                                                    onPress={saveMarkerInfo}
-                                                />
-                                                <Button
-                                                    title="Delete pin"
-                                                    color="red"
-                                                    onPress={() => handleDeletePin(editingMarker.id)}
-                                                />
+                                                <View style={pinModal.buttonsavecanellineup}>
+                                                    <View style={pinModal.buttonspacebetween}>
+                                                        <Button
+                                                            title="Save"
+                                                            color="green"
+                                                            onPress={saveMarkerInfo}
+                                                        />
+                                                    </View>
+                                                    <View style={pinModal.buttonspacebetween}>
+                                                        <Button
+                                                            title="Delete pin"
+                                                            color="red"
+                                                            onPress={() => handleDeletePin(editingMarker.id)}
+                                                        />
+                                                    </View>
+                                                </View>
                                             </>
                                         ) : (
                                             <>
@@ -353,7 +357,7 @@ export default function HomeScreen() {
                                 <View style={pinModal.buttonsavecanellineup}>
                                     <View style={pinModal.buttonspacebetween}>
                                         <Button
-                                            title="Save Pin"
+                                            title="Submit"
                                             onPress={handleSaveNewPin}
                                         />
                                     </View>
@@ -365,17 +369,6 @@ export default function HomeScreen() {
                                         />
                                     </View>
                                 </View>
-
-                                <Button
-                                    title="Save Pin"
-                                    color="green"
-                                    onPress={handleSaveNewPin}
-                                />
-                                <Button
-                                    title="Cancel"
-                                    color="red"
-                                    onPress={() => setNewPinModalVisible(false)}
-                                />
 
                             </View>
                         </TouchableWithoutFeedback>
