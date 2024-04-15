@@ -52,6 +52,16 @@ const style1 = StyleSheet.create({
         justifyContent: 'center',
     },
 
+    loadingOverlay: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 
 
@@ -114,7 +124,8 @@ const pinModal = StyleSheet.create(
             width: 250,
             backgroundColor: 'white',
         },
+
+
         // Other styles...
     });
-
 export {pinModal, style1}
