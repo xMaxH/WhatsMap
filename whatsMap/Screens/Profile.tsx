@@ -31,8 +31,8 @@ const Profile = ({navigation}) => {
             {user ? ( // Displays user info
                 <View>
                     <Text style={style1.text1}>Welcome, {user.email}</Text>
-                    <TouchableOpacity onPress={handleLogout} style={style1.btn1}>
-                        <Text style={style1.text1}>Logout</Text>
+                    <TouchableOpacity onPress={handleLogout} style={style1.Logoutbtn}>
+                        <Text style={style1.text2}>Logout</Text>
                     </TouchableOpacity>
                 </View>
             ) : (

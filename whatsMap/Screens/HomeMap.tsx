@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Modal, Pressable, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Button, Modal, Pressable, Text, TextInput, TouchableWithoutFeedback, View, TouchableOpacity } from 'react-native';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { pinModal } from "../Styles/style1";
@@ -7,8 +7,14 @@ import { pinModal } from "../Styles/style1";
 import { getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
+
+import { addDoc, updateDoc, doc, collection, getDocs } from 'firebase/firestore';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
+import {PushpinOutlined} from "@ant-design/icons";
+
 import { addDoc, updateDoc, doc,deleteDoc, collection, getDocs } from 'firebase/firestore';
 import { AntDesign } from '@expo/vector-icons';
+
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
@@ -25,6 +31,7 @@ export default function HomeScreen() {
     const [tempDescription, setTempDescription] = useState('');
     const [newPinCoordinates, setNewPinCoordinates] = useState(null); // New state for storing coordinates of the new pin
     const [user, setUser] = useState(null);
+    //const [selectedCategory, setSelectedCategory] = useState('');
     const Grimstad = {
         latitude: 58.3405,
         longitude: 8.59343,
@@ -66,6 +73,12 @@ export default function HomeScreen() {
     const isOwner = (marker) => {
         return user && marker.userId === user.uid;
     };
+
+    const data = [
+        {value: "sport"},
+        {value: "bar"},
+        {value: "Tur"},
+    ]
 
     const pinPress = (markerId) => {
         const marker = markers.find((m) => m.id === markerId);
@@ -264,14 +277,20 @@ export default function HomeScreen() {
                                     <>
                                         {isOwner(editingMarker) ? (
                                             <>
+                                                <View style={pinModal.iconpin}>
+                                                    <Text style={pinModal.titletext}>Edit pin</Text>
+                                                    <AntDesign name="pushpin" size={25} color="red" />
+                                                </View>
+                                                <Text style={pinModal.subtitletext}>Edit pin name:</Text>
                                                 <TextInput
                                                     style={pinModal.input}
                                                     placeholder="Title"
                                                     onChangeText={setTempTitle}
                                                     value={tempTitle}
                                                 />
+                                                <Text style={pinModal.subtitletext}>Edit description:</Text>
                                                 <TextInput
-                                                    style={pinModal.input}
+                                                    style={pinModal.inputdescription}
                                                     placeholder="Description"
                                                     onChangeText={setTempDescription}
                                                     value={tempDescription}
@@ -312,18 +331,41 @@ export default function HomeScreen() {
                     <View style={pinModal.fullScreenOverlay}>
                         <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
                             <View style={pinModal.modalView}>
+                                <View style={pinModal.iconpin}>
+                                    <Text style={pinModal.titletext}>Create a pin</Text>
+                                    <AntDesign name="pushpin" size={25} color="red" />
+                                </View>
+                                <Text style={pinModal.subtitletext}>Pin name:</Text>
                                 <TextInput
                                     style={pinModal.input}
                                     placeholder="Title"
                                     onChangeText={setTempTitle}
                                     value={tempTitle}
                                 />
+                                <Text style={pinModal.subtitletext}>Add description</Text>
                                 <TextInput
-                                    style={pinModal.input}
+                                    style={pinModal.inputdescription}
                                     placeholder="Description"
                                     onChangeText={setTempDescription}
                                     value={tempDescription}
                                 />
+
+                                <View style={pinModal.buttonsavecanellineup}>
+                                    <View style={pinModal.buttonspacebetween}>
+                                        <Button
+                                            title="Save Pin"
+                                            onPress={handleSaveNewPin}
+                                        />
+                                    </View>
+                                    <View style={pinModal.buttonspacebetween}>
+                                        <Button
+                                            title="Cancel"
+                                            color="red"
+                                            onPress={() => setNewPinModalVisible(false)}
+                                        />
+                                    </View>
+                                </View>
+
                                 <Button
                                     title="Save Pin"
                                     color="green"
@@ -334,6 +376,7 @@ export default function HomeScreen() {
                                     color="red"
                                     onPress={() => setNewPinModalVisible(false)}
                                 />
+
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
