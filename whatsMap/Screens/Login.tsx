@@ -24,7 +24,7 @@ export default function Login({navigation}) {
             const auth = getAuth(app);
             await signInWithEmailAndPassword(auth, email, password);
             console.log("Logged in successfully");
-            navigation.navigate('MAP');
+            navigation.navigate('Profile');
         } catch (error) {
             console.error("Login failed:", error);
         }
