@@ -20,7 +20,7 @@ const Profile = ({navigation}) => {
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            navigation.navigate('MAP');
+            navigation.navigate('Home');
         } catch (error) {
             console.error("Logout failed", error);
         }
