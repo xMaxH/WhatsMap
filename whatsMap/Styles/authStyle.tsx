@@ -2,9 +2,29 @@ import {StyleSheet} from "react-native";
 
 function authStyles() {
     return StyleSheet.create({
+        textButtonDrawer: {
+            alignSelf: "center",
+            textAlign: "center",
+            fontSize: 30,
+            fontWeight: "bold"
+        },
+        iconButtonDrawer: {
+            left: 30,
+            marginRight: 50,
+            fontSize: 35
+        },
+        buttonDrawer: {
+            flexDirection: "row",
+            alignItems: 'center',
+            backgroundColor: '#FFFFFF',
+            borderRadius: 20,
+            height: 60,
+            width: 310,
+            marginBottom: 30,
+        },
         button: {
             alignItems: 'center',
-            backgroundColor: '#4882C5',
+            backgroundColor: '#FFFFFF',
             borderRadius: 8,
             height: 48,
             justifyContent: 'center',
