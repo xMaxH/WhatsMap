@@ -1,17 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Button, Modal, Pressable, Text, TextInput, TouchableWithoutFeedback, View, ActivityIndicator, TouchableOpacity } from 'react-native';
-import MapView, { Callout, Marker, PROVIDER_GOOGLE,  } from 'react-native-maps';
+import React, {useEffect, useState} from 'react';
+import {
+    Alert,
+    Button,
+    Modal,
+    Pressable,
+    Text,
+    TextInput,
+    TouchableWithoutFeedback,
+    View,
+    ActivityIndicator,
+    TouchableOpacity
+} from 'react-native';
+import MapView, {Callout, Marker, PROVIDER_GOOGLE,} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {pinModal, style1} from "../Styles/style1";
+import {mapStyle} from "../Styles/mapstyle";
 // @ts-ignore
-import { getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged } from 'firebase/auth';
+import {getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { app, db } from "../firebaseConfig";
+import {app, db} from "../firebaseConfig";
+
 
 import {PushpinOutlined} from "@ant-design/icons";
 
-import { addDoc, updateDoc, doc,deleteDoc, collection, getDocs } from 'firebase/firestore';
-import { AntDesign } from '@expo/vector-icons';
+import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs} from 'firebase/firestore';
+import {AntDesign} from '@expo/vector-icons';
 
 
 export const auth = initializeAuth(app, {
@@ -48,7 +61,7 @@ export default function HomeScreen() {
 
     useEffect(() => {
         (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
+            let {status} = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
                 return;
@@ -60,14 +73,19 @@ export default function HomeScreen() {
     }, []);
 
     useEffect(() => {
-        if (user) {
-            loadUserPinsFromFirestore().then(loadedPins => {
-                setMarkers(loadedPins);
-            });
-        } else {
-            setMarkers([]);
+        async function fetchAllPins() {
+            setLoading(true);
+            const permaPins = await loadPermaPins();
+            let userPins = [];
+            if (user) {
+                userPins = await loadUserPinsFromFirestore();
+            }
+            setMarkers([...permaPins, ...userPins]);
+            setLoading(false);
         }
+        fetchAllPins();
     }, [user]);
+
 
     const isOwner = (marker) => {
         return user && marker.userId === user.uid;
@@ -101,7 +119,7 @@ export default function HomeScreen() {
             updatePinInFirestore(editingMarker.id, updatedPinData).then(() => {
                 const updatedMarkers = markers.map(marker => {
                     if (marker.id === editingMarker.id) {
-                        return { ...marker, ...updatedPinData };
+                        return {...marker, ...updatedPinData};
                     }
                     return marker;
                 });
@@ -123,8 +141,8 @@ export default function HomeScreen() {
             alert('You must be logged in to place pins.');
             return;
         }
-        const { latitude, longitude } = event.nativeEvent.coordinate;
-        setNewPinCoordinates({ latitude, longitude });
+        const {latitude, longitude} = event.nativeEvent.coordinate;
+        setNewPinCoordinates({latitude, longitude});
         setNewPinModalVisible(true); // Show modal for entering new pin details
     };
 
@@ -156,10 +174,10 @@ export default function HomeScreen() {
         }
         try {
             const userPinsCollectionRef = collection(db, 'users', user.uid, 'pins');
-            const pinWithUserId = { ...pin, userId: user.uid }; // Ensure userId is correctly attached
+            const pinWithUserId = {...pin, userId: user.uid}; // Ensure userId is correctly attached
             const docRef = await addDoc(userPinsCollectionRef, pinWithUserId);
             console.log('Pin saved to Firestore with ID:', docRef.id);
-            return { ...pinWithUserId, id: docRef.id };
+            return {...pinWithUserId, id: docRef.id};
         } catch (error) {
             console.error('Error saving pin:', error);
         }
@@ -176,6 +194,21 @@ export default function HomeScreen() {
         try {
             const userPinsCollectionRef = collection(db, 'users', user.uid, 'pins');
             const querySnapshot = await getDocs(userPinsCollectionRef);
+            return querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        } catch (error) {
+            console.error('Error loading pins:', error);
+            return [];
+        }
+    };
+
+    const loadPermaPins = async () => {
+        try {
+            const permaPinsCollectionRef = collection(db, 'permaPins');
+            const querySnapshot = await getDocs(permaPinsCollectionRef);
+
             return querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
@@ -228,13 +261,15 @@ export default function HomeScreen() {
         }
     };
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
             <MapView
-                style={{ flex: 1 }}
+                style={{flex: 1}}
                 onPress={handleMapPress}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={true}
                 region={Grimstad}
+                initialRegion={Grimstad}
+                customMapStyle={mapStyle}
             >
                 {showPins && markers.map((marker) => (
                     <Marker
@@ -255,7 +290,7 @@ export default function HomeScreen() {
 
             {loading && (
                 <View style={style1.loadingOverlay}>
-                    <ActivityIndicator size={300} color="#0175FF" />
+                    <ActivityIndicator size={300} color="#0175FF"/>
                 </View>
             )}
 
@@ -267,7 +302,7 @@ export default function HomeScreen() {
                 alignItems: 'flex-end'
             }}>
                 <Pressable onPress={togglePins}>
-                    <AntDesign name="retweet" size={40} color="black" />
+                    <AntDesign name="retweet" size={40} color="black"/>
                 </Pressable>
             </View>
 
@@ -288,7 +323,7 @@ export default function HomeScreen() {
                                             <>
                                                 <View style={pinModal.iconpin}>
                                                     <Text style={pinModal.titletext}>Edit pin</Text>
-                                                    <AntDesign name="pushpin" size={25} color="red" />
+                                                    <AntDesign name="pushpin" size={25} color="red"/>
                                                 </View>
                                                 <Text style={pinModal.subtitletext}>Edit pin name:</Text>
                                                 <TextInput
@@ -348,7 +383,7 @@ export default function HomeScreen() {
                             <View style={pinModal.modalView}>
                                 <View style={pinModal.iconpin}>
                                     <Text style={pinModal.titletext}>Create a pin</Text>
-                                    <AntDesign name="pushpin" size={25} color="red" />
+                                    <AntDesign name="pushpin" size={25} color="red"/>
                                 </View>
                                 <Text style={pinModal.subtitletext}>Pin name:</Text>
                                 <TextInput

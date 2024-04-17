@@ -1,0 +1,29 @@
+[
+  {
+    "id": "Pin1",
+    "title": "First Location",
+    "description": "Description of the first location.",
+    "coordinate": {
+      "latitude": 58.35,
+      "longitude": 8.59343
+    }
+  },
+  {
+    "id": "Pin2",
+    "title": "Second Location",
+    "description": "Description of the second location.",
+    "coordinate": {
+      "latitude": 58.3405,
+      "longitude": 8.59343
+    }
+  },
+  {
+    "id": "Pin4",
+    "title": "HALLO1",
+    "description": "666",
+    "coordinate": {
+      "latitude": 58.4405,
+      "longitude": 8.59343
+    }
+  }
+]
