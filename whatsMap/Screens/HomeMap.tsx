@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Alert,
     Button,
@@ -11,21 +11,16 @@ import {
     ActivityIndicator,
     TouchableOpacity
 } from 'react-native';
-import MapView, {Callout, Marker, PROVIDER_GOOGLE,} from 'react-native-maps';
+import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import {pinModal, style1} from "../Styles/style1";
-import {mapStyle} from "../Styles/mapstyle";
+import { pinModal, style1 } from "../Styles/style1";
+import { mapStyle } from "../Styles/mapstyle";
 // @ts-ignore
-import {getReactNativePersistence, getAuth, initializeAuth, onAuthStateChanged} from 'firebase/auth';
+import { initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import {app, db} from "../firebaseConfig";
-
-
-import {PushpinOutlined} from "@ant-design/icons";
-
-import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs} from 'firebase/firestore';
-import {AntDesign} from '@expo/vector-icons';
-
+import { app, db } from "../firebaseConfig";
+import { AntDesign } from '@expo/vector-icons';
+import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs } from 'firebase/firestore';
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
@@ -36,21 +31,19 @@ export default function HomeScreen() {
     const [errorMsg, setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [newPinModalVisible, setNewPinModalVisible] = useState(false); // New state for creating pin modal visibility
+    const [newPinModalVisible, setNewPinModalVisible] = useState(false);
     const [editingMarker, setEditingMarker] = useState(null);
     const [tempTitle, setTempTitle] = useState('');
     const [tempDescription, setTempDescription] = useState('');
-    const [newPinCoordinates, setNewPinCoordinates] = useState(null); // New state for storing coordinates of the new pin
+    const [newPinCoordinates, setNewPinCoordinates] = useState(null);
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false); // Add loading state
-    //const [selectedCategory, setSelectedCategory] = useState('');
+    const [loading, setLoading] = useState(true);
     const Grimstad = {
         latitude: 58.3405,
         longitude: 8.59343,
         latitudeDelta: 0.02,
         longitudeDelta: 0.02,
     };
-
     const [showPins, setShowPins] = useState(true);
 
     useEffect(() => {
@@ -66,7 +59,6 @@ export default function HomeScreen() {
                 setErrorMsg('Permission to access location was denied');
                 return;
             }
-
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
         })();
@@ -75,27 +67,17 @@ export default function HomeScreen() {
     useEffect(() => {
         async function fetchAllPins() {
             setLoading(true);
+            const pins = await loadPinsFromFirestore();
             const permaPins = await loadPermaPins();
-            let userPins = [];
-            if (user) {
-                userPins = await loadUserPinsFromFirestore();
-            }
-            setMarkers([...permaPins, ...userPins]);
+            setMarkers([...pins,...permaPins]);
             setLoading(false);
         }
         fetchAllPins();
     }, [user]);
 
-
     const isOwner = (marker) => {
         return user && marker.userId === user.uid;
     };
-
-    const data = [
-        {value: "sport"},
-        {value: "bar"},
-        {value: "Tur"},
-    ]
 
     const pinPress = (markerId) => {
         const marker = markers.find((m) => m.id === markerId);
@@ -105,52 +87,44 @@ export default function HomeScreen() {
             setTempDescription(marker.description);
             setIsModalVisible(true);
         } else {
-            alert('You can only edit your own pins.');
+            Alert.alert('You can only edit your own pins.');
         }
     };
 
-    const saveMarkerInfo = () => {
+    const saveMarkerInfo = async () => {
+        if (!editingMarker) return;
         const updatedPinData = {
             title: tempTitle,
             description: tempDescription,
         };
-
-        if (editingMarker && editingMarker.id) {
-            updatePinInFirestore(editingMarker.id, updatedPinData).then(() => {
-                const updatedMarkers = markers.map(marker => {
-                    if (marker.id === editingMarker.id) {
-                        return {...marker, ...updatedPinData};
-                    }
-                    return marker;
-                });
-
-                setMarkers(updatedMarkers);
-                setIsModalVisible(false);
-                setEditingMarker(null);
-                setTempTitle('');
-                setTempDescription('');
-            }).catch(error => {
-                console.error('Failed to update pin:', error);
-            });
-        }
+        await updatePinInFirestore(editingMarker.id, updatedPinData);
+        const updatedMarkers = markers.map(marker => {
+            if (marker.id === editingMarker.id) {
+                return {...marker, ...updatedPinData};
+            }
+            return marker;
+        });
+        setMarkers(updatedMarkers);
+        setIsModalVisible(false);
+        setEditingMarker(null);
+        setTempTitle('');
+        setTempDescription('');
     };
 
-    // Updated function with modal for new pin creation
     const handleMapPress = (event) => {
         if (!user) {
-            alert('You must be logged in to place pins.');
+            Alert.alert('You must be logged in to place pins.');
             return;
         }
-        const {latitude, longitude} = event.nativeEvent.coordinate;
-        setNewPinCoordinates({latitude, longitude});
-        setNewPinModalVisible(true); // Show modal for entering new pin details
+        const { latitude, longitude } = event.nativeEvent.coordinate;
+        setNewPinCoordinates({ latitude, longitude });
+        setNewPinModalVisible(true);
     };
 
-    // New function to handle saving the new pin
     const handleSaveNewPin = async () => {
         if (!newPinCoordinates) return;
         setNewPinModalVisible(false);
-        setLoading(true); // Set loading true when operation begins
+        setLoading(true);
         try {
             const newMarker = {
                 coordinate: newPinCoordinates,
@@ -160,40 +134,26 @@ export default function HomeScreen() {
             };
             const savedPinWithUserId = await savePinToFirestore(newMarker);
             setMarkers(prevMarkers => [...prevMarkers, savedPinWithUserId]);
-        } catch (error) {
-            console.error('Failed to save pin:', error);
         } finally {
-            setLoading(false); // Set loading false after operation
+            setLoading(false);
         }
     };
 
     const savePinToFirestore = async (pin) => {
-        if (!user) {
-            console.log('User not logged in. Pin not saved.');
-            return;
-        }
         try {
-            const userPinsCollectionRef = collection(db, 'users', user.uid, 'pins');
-            const pinWithUserId = {...pin, userId: user.uid}; // Ensure userId is correctly attached
-            const docRef = await addDoc(userPinsCollectionRef, pinWithUserId);
-            console.log('Pin saved to Firestore with ID:', docRef.id);
+            const pinsCollectionRef = collection(db, 'pins');
+            const pinWithUserId = {...pin, userId: user.uid};
+            const docRef = await addDoc(pinsCollectionRef, pinWithUserId);
             return {...pinWithUserId, id: docRef.id};
         } catch (error) {
             console.error('Error saving pin:', error);
         }
     };
-    const togglePins = () => {
-        setShowPins(!showPins); // Toggle the state to show/hide pins
-    };
 
-    const loadUserPinsFromFirestore = async () => {
-        if (!user) {
-            console.log('User not logged in. No pins loaded.');
-            return [];
-        }
+    const loadPinsFromFirestore = async () => {
         try {
-            const userPinsCollectionRef = collection(db, 'users', user.uid, 'pins');
-            const querySnapshot = await getDocs(userPinsCollectionRef);
+            const pinsCollectionRef = collection(db, 'pins');
+            const querySnapshot = await getDocs(pinsCollectionRef);
             return querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
@@ -220,46 +180,35 @@ export default function HomeScreen() {
     };
 
     const updatePinInFirestore = async (pinId, updatedPinData) => {
-        if (!user) {
-            console.error("User must be logged in to update pins.");
-            return;
-        }
-
         try {
-            const pinRef = doc(db, 'users', user.uid, 'pins', pinId);
+            const pinRef = doc(db, 'pins', pinId);
             await updateDoc(pinRef, updatedPinData);
-            console.log('Pin updated successfully in Firestore');
         } catch (error) {
             console.error('Error updating pin:', error);
         }
     };
 
     const deletePinFromFirestore = async (pinId) => {
-        if (!user) {
-            console.error("User must be logged in to delete pins.");
-            return;
-        }
-
         try {
-            const pinRef = doc(db, 'users', user.uid, 'pins', pinId);
+            const pinRef = doc(db, 'pins', pinId);
             await deleteDoc(pinRef);
-            console.log('Pin deleted successfully from Firestore');
+            setMarkers(markers.filter(marker => marker.id !== pinId));
         } catch (error) {
             console.error('Error deleting pin:', error);
         }
     };
+
     const handleDeletePin = async (pinId) => {
-        try {
-            setIsModalVisible(false);
-            setLoading(true);
-            await deletePinFromFirestore(pinId);
-            setMarkers(markers.filter(marker => marker.id !== pinId));
-        } catch (error) {
-            console.error('Failed to delete pin:', error);
-        } finally {
-            setLoading(false);
-        }
+        setIsModalVisible(false);
+        setLoading(true);
+        await deletePinFromFirestore(pinId);
+        setLoading(false);
     };
+
+    const togglePins = () => {
+        setShowPins(!showPins);
+    };
+
     return (
         <View style={{flex: 1}}>
             <MapView
@@ -276,7 +225,7 @@ export default function HomeScreen() {
                         key={marker.id}
                         coordinate={marker.coordinate}
                         title={marker.title}
-                        onCalloutPress={() => isOwner(marker) ? pinPress(marker.id) : alert('You can only edit your pins.')}
+                        onCalloutPress={() => isOwner(marker) ? pinPress(marker.id) : Alert.alert('You can only edit your pins.')}
                     >
                         <Callout>
                             <View>
@@ -287,14 +236,11 @@ export default function HomeScreen() {
                     </Marker>
                 ))}
             </MapView>
-
             {loading && (
                 <View style={style1.loadingOverlay}>
-                    <ActivityIndicator size={300} color="#0175FF"/>
+                    <ActivityIndicator size="large" color="#0175FF"/>
                 </View>
             )}
-
-
             <View style={{
                 position: 'absolute',
                 top: 10,
@@ -305,8 +251,6 @@ export default function HomeScreen() {
                     <AntDesign name="retweet" size={40} color="black"/>
                 </Pressable>
             </View>
-
-            {/* Existing Modal for Editing Pins */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -369,8 +313,6 @@ export default function HomeScreen() {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-
-            {/* New Modal for Creating New Pins */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -392,14 +334,13 @@ export default function HomeScreen() {
                                     onChangeText={setTempTitle}
                                     value={tempTitle}
                                 />
-                                <Text style={pinModal.subtitletext}>Add description</Text>
+                                <Text style={pinModal.subtitletext}>Add description:</Text>
                                 <TextInput
-                                    style={pinModal.inputdescription}
-                                    placeholder="Description"
-                                    onChangeText={setTempDescription}
-                                    value={tempDescription}
+                                style={pinModal.inputdescription}
+                                placeholder="Description"
+                                onChangeText={setTempDescription}
+                                value={tempDescription}
                                 />
-
                                 <View style={pinModal.buttonsavecanellineup}>
                                     <View style={pinModal.buttonspacebetween}>
                                         <Button
@@ -415,7 +356,6 @@ export default function HomeScreen() {
                                         />
                                     </View>
                                 </View>
-
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
