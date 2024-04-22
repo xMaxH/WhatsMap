@@ -116,6 +116,10 @@ export default function HomeScreen() {
             Alert.alert('You must be logged in to place pins.');
             return;
         }
+        if (markers.filter(marker => marker.userId === user.uid).length >= 3) {
+            alert('You can only create up to 3 markers. Please delete one to add more.');
+            return;
+        }
         const { latitude, longitude } = event.nativeEvent.coordinate;
         setNewPinCoordinates({ latitude, longitude });
         setNewPinModalVisible(true);
@@ -156,7 +160,7 @@ export default function HomeScreen() {
             const querySnapshot = await getDocs(pinsCollectionRef);
             return querySnapshot.docs.map(doc => ({
                 id: doc.id,
-                ...doc.data()
+                ...doc.data(),
             }));
         } catch (error) {
             console.error('Error loading pins:', error);
