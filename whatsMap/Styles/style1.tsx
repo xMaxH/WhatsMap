@@ -78,7 +78,7 @@ const pinModal = StyleSheet.create(
             fontWeight: 'bold',
         },
         subtitletext: {
-            fontSize: 15,
+            fontSize: 20,
             fontWeight: 'bold',
         },
         buttonsavecanellineup: {
