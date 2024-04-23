@@ -9,7 +9,8 @@ import {
     TouchableWithoutFeedback,
     View,
     ActivityIndicator,
-    TouchableOpacity
+    TouchableOpacity,
+    FlatList
 } from 'react-native';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -41,6 +42,8 @@ export default function HomeScreen() {
     const [viewPinModalVisible, setViewPinModalVisible] = useState(false);
     const [viewingPin, setViewingPin] = useState(null);
     const [newComment, setNewComment] = useState('');
+    const [comments, setComments] = useState([]);
+
     const Grimstad = {
         latitude: 58.3405,
         longitude: 8.59343,
@@ -77,6 +80,13 @@ export default function HomeScreen() {
         }
         fetchAllPins();
     }, [user]);
+
+    useEffect(() => {
+        if (viewPinModalVisible && viewingPin) {
+            fetchComments(viewingPin.id);
+        }
+    }, [viewPinModalVisible, viewingPin]);
+
 
     const isOwner = (marker) => {
         return user?.uid === marker?.userId;
@@ -218,28 +228,45 @@ export default function HomeScreen() {
     const togglePins = () => {
         setShowPins(!showPins);
     };
-/*
+
     const handleAddComment = async (pinId) => {
-        if (!newComment.trim()) return;  // Prevent empty comments
+        if (!newComment.trim()) {
+            Alert.alert("Error", "Comment cannot be empty.");
+            return;  // Prevent empty comments
+        }
 
         const commentData = {
             text: newComment,
-            userId: user.uid,
+            userId: user.uid,  // Assuming `user` holds the current user's information
+            pinId: pinId,
             timestamp: new Date(),
         };
 
         try {
-            const pinCommentsRef = collection(db, 'pins', pinId, 'comments');
+            // Automatically creates a 'comments' subcollection under the 'pins' document if it doesn't exist
+            const pinCommentsRef = collection(db, 'comments');
             await addDoc(pinCommentsRef, commentData);
-            setNewComment('');
-            setIsModalVisible(false);
-            Alert.alert('Comment added successfully');
+            setNewComment('');  // Clear the comment input after submission
+            Alert.alert('Success', 'Comment added successfully');
         } catch (error) {
             console.error('Error adding comment:', error);
-            Alert.alert('Failed to add comment');
+            Alert.alert('Error', 'Failed to add comment');
         }
     };
-*/
+
+    const fetchComments = async (pinId) => {
+        try {
+            const pinCommentsRef = collection(db, 'pins', pinId, 'comments');
+            const querySnapshot = await getDocs(pinCommentsRef);
+            const fetchedComments = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setComments(fetchedComments);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    };
 
     return (
         <View style={{flex: 1}}>
@@ -405,6 +432,36 @@ export default function HomeScreen() {
                             <View style={pinModal.modalView}>
                                 <Text style={pinModal.titletext}>{viewingPin?.title || "No Title"}</Text>
                                 <Text style={pinModal.subtitletext}>{viewingPin?.description || "No Description"}</Text>
+                                <TextInput
+                                    style={pinModal.input}
+                                    placeholder="Add a comment..."
+                                    value={newComment}
+                                    onChangeText={setNewComment}
+                                />
+                                <Button
+                                    title="Submit Comment"
+                                    onPress={() => {
+                                        if (user) {
+                                            handleAddComment(viewingPin.id);
+                                        } else {
+                                            Alert.alert("Please log in to add comments");
+                                        }
+                                    }}
+                                />
+                                <FlatList
+                                    data={comments}
+                                    keyExtractor={(item) => item.id}
+                                    renderItem={({ item }) => (
+                                        <View style={{ marginBottom: 10 }}>
+                                            <Text style={{ fontWeight: 'bold' }}>{item.username || 'Anonymous'}</Text>
+                                            <Text>{item.text}</Text>
+                                            {/* Format the timestamp */}
+                                            <Text style={{ fontSize: 12, color: 'grey' }}>
+                                                {item.timestamp.toDate().toLocaleString()}
+                                            </Text>
+                                        </View>
+                                    )}
+                                />
                                 <Button
                                     title="Close"
                                     onPress={() => setViewPinModalVisible(false)}
