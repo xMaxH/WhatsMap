@@ -11,6 +11,7 @@ import {
     ActivityIndicator,
     TouchableOpacity
 } from 'react-native';
+
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { pinModal, style1 } from "../Styles/style1";
@@ -21,6 +22,8 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
 import { AntDesign } from '@expo/vector-icons';
 import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs } from 'firebase/firestore';
+import {SelectOutlined} from "@ant-design/icons";
+import SelectCategory from "./SelectCategory";
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
@@ -34,6 +37,7 @@ export default function HomeScreen() {
     const [newPinModalVisible, setNewPinModalVisible] = useState(false);
     const [editingMarker, setEditingMarker] = useState(null);
     const [tempTitle, setTempTitle] = useState('');
+    const [category, setCategory] = useState('');
     const [tempDescription, setTempDescription] = useState('');
     const [newPinCoordinates, setNewPinCoordinates] = useState(null);
     const [user, setUser] = useState(null);
@@ -46,6 +50,7 @@ export default function HomeScreen() {
     };
     const [showPins, setShowPins] = useState(true);
 
+    console.log("I ame here", category)
     useEffect(() => {
         return onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
@@ -209,12 +214,28 @@ export default function HomeScreen() {
         setLoading(false);
     };
 
+
+
+
     const togglePins = () => {
         setShowPins(!showPins);
     };
 
+    const options = ['Party', 'Sport', 'Bars'];
+
+    const handlePress = (option: string) => {
+        console.log("Selected:", option);
+    };
+
     return (
         <View style={{flex: 1}}>
+            <View style={style1.chooseCategory}>
+                {options.map(option => (
+                    <TouchableOpacity key={option} style={style1.optionBox} onPress={() => handlePress(option)}>
+                        <Text style={style1.textCategory}>{option}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
             <MapView
                 style={{flex: 1}}
                 onPress={handleMapPress}
@@ -340,11 +361,15 @@ export default function HomeScreen() {
                                 />
                                 <Text style={pinModal.subtitletext}>Add description:</Text>
                                 <TextInput
-                                style={pinModal.inputdescription}
-                                placeholder="Description"
-                                onChangeText={setTempDescription}
-                                value={tempDescription}
+                                    style={pinModal.inputdescription}
+                                    placeholder="Description"
+                                    onChangeText={setTempDescription}
+                                    value={tempDescription}
                                 />
+
+                                <SelectCategory setCategory={setCategory}/>
+
+
                                 <View style={pinModal.buttonsavecanellineup}>
                                     <View style={pinModal.buttonspacebetween}>
                                         <Button
@@ -368,3 +393,4 @@ export default function HomeScreen() {
         </View>
     );
 }
+
