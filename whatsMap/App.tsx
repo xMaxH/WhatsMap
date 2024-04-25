@@ -4,7 +4,6 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {NavigationContainer} from "@react-navigation/native";
 import HomeScreen from "./Screens/HomeMap";
 import Profile from "./Screens/Profile";
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Drawer from "./Screens/Drawer";
 
