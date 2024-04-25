@@ -42,6 +42,9 @@ export default function HomeScreen() {
     const [newPinCoordinates, setNewPinCoordinates] = useState(null);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [viewPinModalVisible, setViewPinModalVisible] = useState(false);
+    const [viewingPin, setViewingPin] = useState(null);
+    const [newComment, setNewComment] = useState('');
     const Grimstad = {
         latitude: 58.3405,
         longitude: 8.59343,
@@ -81,18 +84,21 @@ export default function HomeScreen() {
     }, [user]);
 
     const isOwner = (marker) => {
-        return user && marker.userId === user.uid;
+        return user?.uid === marker?.userId;
     };
 
     const pinPress = (markerId) => {
         const marker = markers.find((m) => m.id === markerId);
-        if (marker && isOwner(marker)) {
-            setEditingMarker(marker);
-            setTempTitle(marker.title);
-            setTempDescription(marker.description);
-            setIsModalVisible(true);
-        } else {
-            Alert.alert('You can only edit your own pins.');
+        if (marker) {
+            if (user && isOwner(marker)) {
+                setEditingMarker(marker);
+                setTempTitle(marker.title);
+                setTempDescription(marker.description);
+                setIsModalVisible(true);
+            } else {
+                setViewingPin(marker);
+                setViewPinModalVisible(true);
+            }
         }
     };
 
@@ -220,6 +226,28 @@ export default function HomeScreen() {
     const togglePins = () => {
         setShowPins(!showPins);
     };
+/*
+    const handleAddComment = async (pinId) => {
+        if (!newComment.trim()) return;  // Prevent empty comments
+
+        const commentData = {
+            text: newComment,
+            userId: user.uid,
+            timestamp: new Date(),
+        };
+
+        try {
+            const pinCommentsRef = collection(db, 'pins', pinId, 'comments');
+            await addDoc(pinCommentsRef, commentData);
+            setNewComment('');
+            setIsModalVisible(false);
+            Alert.alert('Comment added successfully');
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            Alert.alert('Failed to add comment');
+        }
+    };
+*/
 
     const options = ['Party', 'Sport', 'Bars'];
 
@@ -250,7 +278,7 @@ export default function HomeScreen() {
                         key={marker.id}
                         coordinate={marker.coordinate}
                         title={marker.title}
-                        onCalloutPress={() => isOwner(marker) ? pinPress(marker.id) : Alert.alert('You can only edit your pins.')}
+                        onCalloutPress={() => pinPress(marker.id)}
                     >
                         <Callout>
                             <View>
@@ -390,6 +418,28 @@ export default function HomeScreen() {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={viewPinModalVisible}
+                onRequestClose={() => setViewPinModalVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setViewPinModalVisible(false)}>
+                    <View style={pinModal.fullScreenOverlay}>
+                        <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                            <View style={pinModal.modalView}>
+                                <Text style={pinModal.titletext}>{viewingPin?.title || "No Title"}</Text>
+                                <Text style={pinModal.subtitletext}>{viewingPin?.description || "No Description"}</Text>
+                                <Button
+                                    title="Close"
+                                    onPress={() => setViewPinModalVisible(false)}
+                                />
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
         </View>
     );
 }
