@@ -273,6 +273,23 @@ export default function HomeScreen() {
         }
     };
 
+    const handleDeleteComment = async (commentId) => {
+        try {
+            // Reference to the specific comment document in the top-level 'comments' collection
+            const commentRef = doc(db, 'comments', commentId);
+            await deleteDoc(commentRef);
+
+            // Update local state to remove the comment from the list
+            setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+
+            // Optionally show a confirmation message
+            Alert.alert('Success', 'Comment deleted successfully');
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            Alert.alert('Error', 'Failed to delete comment');
+        }
+    };
+
     return (
         <View style={{flex: 1}}>
             <MapView
@@ -469,6 +486,23 @@ export default function HomeScreen() {
                                             <Text style={{ fontSize: 12, color: 'grey' }}>
                                                 {item.timestamp.toDate().toLocaleString()}
                                             </Text>
+                                            {user && user.uid === item.userId && (
+                                                <Button
+                                                    title="Delete"
+                                                    onPress={() => {
+                                                        // Confirm before deleting
+                                                        Alert.alert(
+                                                            'Delete Comment',
+                                                            'Are you sure you want to delete this comment?',
+                                                            [
+                                                                { text: 'Cancel', style: 'cancel' },
+                                                                { text: 'OK', onPress: () => handleDeleteComment(item.id) },
+                                                            ],
+                                                            { cancelable: false }
+                                                        );
+                                                    }}
+                                                />
+                                            )}
                                         </View>
                                     )}
                                     ListEmptyComponent={<Text>No comments yet</Text>}
