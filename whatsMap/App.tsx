@@ -29,6 +29,13 @@ export default function App() {
                 <Tab.Screen name="Home" component={HomeScreen}
                     options={
                 {
+                    headerPressColor:'red',
+                    headerTransparent:true,
+                    headerPressOpacity:100,
+                    headerStatusBarHeight:12,
+
+                    headerTitleAlign:'center',
+                    headerTintColor:'cyan',
                     tabBarLabel: 'Home',
                     tabBarIcon: ({color}) =>
                     (
