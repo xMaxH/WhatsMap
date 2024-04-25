@@ -21,11 +21,25 @@ export default function Register({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+
+    const isValidPassword = (password) => {
+        // Regex that checks for minimum 8 characters, at least one uppercase letter, one number, and one special character
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return regex.test(password);
+    };
+
 
     // Function to handle user registration
     const handleRegister = async () => {
         if (password !== confirmPassword) {
             alert('Passwords do not match.');
+            return;
+        }
+
+        if (!isValidPassword(password)) {
+            alert('Password must be at least 8 characters long, include at least one uppercase letter, one number, and one special character.');
             return;
         }
 
@@ -35,6 +49,7 @@ export default function Register({navigation}) {
             navigation.navigate('MAP');
         } catch (error) {
             console.error("ERROR", error);
+            alert('Registration failed. Please check your inputs and try again.');
         }
     };
 
@@ -84,12 +99,16 @@ export default function Register({navigation}) {
                                 autoCapitalize="none"
                                 secureTextEntry
                                 autoCorrect={false}
-                                keyboardType="email-address"
+                                keyboardType="visible-password"
                                 returnKeyType="next"
                                 style={styles.textInput}
                                 textContentType="password"
-                                onChangeText={(text) => setPassword(text)}
+                                onChangeText={(text) => {
+                                    setPassword(text);
+                                    setPasswordError(isValidPassword(text) ? '' : 'Password must include at least 8 chars, 1 uppercase, 1 number, 1 special char');
+                                }}
                             />
+                            <Text style={styles.text}>{passwordError}</Text>
                         </View>
                     </Pressable>
 

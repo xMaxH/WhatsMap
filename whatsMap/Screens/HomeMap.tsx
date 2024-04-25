@@ -10,7 +10,8 @@ import {
     View,
     ActivityIndicator,
     TouchableOpacity,
-    FlatList
+    FlatList,
+    ScrollView
 } from 'react-native';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -21,7 +22,7 @@ import { initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
 import { AntDesign } from '@expo/vector-icons';
-import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
@@ -86,6 +87,7 @@ export default function HomeScreen() {
             fetchComments(viewingPin.id);
         }
     }, [viewPinModalVisible, viewingPin]);
+
 
 
     const isOwner = (marker) => {
@@ -237,11 +239,11 @@ export default function HomeScreen() {
 
         const commentData = {
             text: newComment,
-            userId: user.uid,  // Assuming `user` holds the current user's information
+            userId: user.uid,
+            username: user.email,
             pinId: pinId,
             timestamp: new Date(),
         };
-
         try {
             // Automatically creates a 'comments' subcollection under the 'pins' document if it doesn't exist
             const pinCommentsRef = collection(db, 'comments');
@@ -256,8 +258,11 @@ export default function HomeScreen() {
 
     const fetchComments = async (pinId) => {
         try {
-            const pinCommentsRef = collection(db, 'pins', pinId, 'comments');
-            const querySnapshot = await getDocs(pinCommentsRef);
+            const commentsRef = collection(db, 'comments');
+            // Query comments for a specific pinId
+            const q = query(commentsRef, where("pinId", "==", pinId));
+            const querySnapshot = await getDocs(q);
+            // Map over the documents to extract comment data
             const fetchedComments = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
@@ -334,6 +339,7 @@ export default function HomeScreen() {
                                                     placeholder="Title"
                                                     onChangeText={setTempTitle}
                                                     value={tempTitle}
+                                                    maxLength={30}
                                                 />
                                                 <Text style={pinModal.subtitletext}>Edit description:</Text>
                                                 <TextInput
@@ -341,6 +347,7 @@ export default function HomeScreen() {
                                                     placeholder="Description"
                                                     onChangeText={setTempDescription}
                                                     value={tempDescription}
+                                                    maxLength={300}
                                                 />
                                                 <View style={pinModal.buttonsavecanellineup}>
                                                     <View style={pinModal.buttonspacebetween}>
@@ -392,6 +399,7 @@ export default function HomeScreen() {
                                     placeholder="Title"
                                     onChangeText={setTempTitle}
                                     value={tempTitle}
+                                    maxLength={30}
                                 />
                                 <Text style={pinModal.subtitletext}>Add description:</Text>
                                 <TextInput
@@ -399,6 +407,7 @@ export default function HomeScreen() {
                                 placeholder="Description"
                                 onChangeText={setTempDescription}
                                 value={tempDescription}
+                                maxLength={300}
                                 />
                                 <View style={pinModal.buttonsavecanellineup}>
                                     <View style={pinModal.buttonspacebetween}>
@@ -437,6 +446,7 @@ export default function HomeScreen() {
                                     placeholder="Add a comment..."
                                     value={newComment}
                                     onChangeText={setNewComment}
+                                    maxLength={300}
                                 />
                                 <Button
                                     title="Submit Comment"
@@ -455,17 +465,22 @@ export default function HomeScreen() {
                                         <View style={{ marginBottom: 10 }}>
                                             <Text style={{ fontWeight: 'bold' }}>{item.username || 'Anonymous'}</Text>
                                             <Text>{item.text}</Text>
-                                            {/* Format the timestamp */}
+                                            {/* The timestamp */}
                                             <Text style={{ fontSize: 12, color: 'grey' }}>
                                                 {item.timestamp.toDate().toLocaleString()}
                                             </Text>
                                         </View>
                                     )}
+                                    ListEmptyComponent={<Text>No comments yet</Text>}
+                                    initialNumToRender={5} // Number of items to render in the initial batch
+                                    contentContainerStyle={{ maxHeight: 320 }}
                                 />
-                                <Button
-                                    title="Close"
-                                    onPress={() => setViewPinModalVisible(false)}
-                                />
+                                    <Button
+                                        title="Close"
+                                        onPress={() => setViewPinModalVisible(false)}
+                                    />
+
+
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
