@@ -24,7 +24,14 @@ const style1 = StyleSheet.create({
             backgroundColor:"lightblue",
             color:"black"
         },
+    text:{
+        fontSize:20,
+    },
 
+    textheader: {
+        marginTop: 8,
+        fontSize:50,
+    },
     btn1:{
         backgroundColor:"lightblue",
         color:"red",

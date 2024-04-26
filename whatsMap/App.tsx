@@ -10,6 +10,7 @@ import {onAuthStateChanged} from "firebase/auth";
 import HomeScreen, {auth} from "./Screens/HomeMap"
 import Register from "./Screens/Register";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AboutUs from "./Screens/AboutUs";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -113,6 +114,7 @@ export default function App() {
             <Stack.Navigator>
                 <Stack.Screen name="Main" component={MainTabScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Register" component={Register} />
+                <Stack.Screen name="About us" component={AboutUs}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

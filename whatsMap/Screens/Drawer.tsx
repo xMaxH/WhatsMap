@@ -85,7 +85,7 @@ export default function Drawer({navigation})
             </TouchableOpacity>
 
             <TouchableOpacity
-                onPress={() => navigation.navigate('Profile')}
+                onPress={() => navigation.navigate('About us')}
             >
                 <View style={styles.buttonDrawer}>
                     <Icon name="information"
