@@ -49,6 +49,7 @@ export default function HomeScreen() {
     };
     const [showPins, setShowPins] = useState(true);
 
+
     useEffect(() => {
         return onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
@@ -248,10 +249,14 @@ export default function HomeScreen() {
                 onPress={handleMapPress}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={true}
+                showsMyLocationButton={true}
+                showsCompass={false}
                 region={Grimstad}
                 initialRegion={Grimstad}
                 customMapStyle={mapStyle}
+                mapPadding={{top:40, bottom:0   , left:25, right:25}}
             >
+
                 {showPins && markers.map((marker) => (
                     <Marker
                         key={marker.id}
