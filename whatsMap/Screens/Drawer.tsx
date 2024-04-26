@@ -1,16 +1,24 @@
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity} from "react-native";
 import loginStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
 import {app} from "../firebaseConfig";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import HomeScreen from "./HomeMap";
+import HomeScreen, {auth} from "./HomeMap";
+import {onAuthStateChanged} from "firebase/auth";
 
 
 
 export default function Drawer({navigation})
 {
+    const [user, setUser] = useState(null);
+
+    // Checks if user is logged in
+    useEffect(() =>
+        onAuthStateChanged(auth, currentUser => {
+            setUser(currentUser);
+        }), []);
     const styles = loginStyle
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: "rgba(48, 56, 75, 1)"}}>
@@ -25,8 +33,8 @@ export default function Drawer({navigation})
                     <Text style={styles.textButtonDrawer}>Home Map</Text>
                 </View>
             </TouchableOpacity>
-
-            <TouchableOpacity
+            {!user && (
+                <TouchableOpacity
                 onPress={() => navigation.navigate('Login')}
             >
                 <View style={styles.buttonDrawer}>
@@ -36,7 +44,7 @@ export default function Drawer({navigation})
                     />
                     <Text style={styles.textButtonDrawer}>Login</Text>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity>)}
 
 
             <TouchableOpacity
@@ -51,7 +59,7 @@ export default function Drawer({navigation})
                 </View>
             </TouchableOpacity>
 
-
+            {user && (
             <TouchableOpacity
                 onPress={() => navigation.navigate('Profile')}
             >
@@ -62,7 +70,7 @@ export default function Drawer({navigation})
                     />
                     <Text style={styles.textButtonDrawer}>Profile</Text>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity>)}
 
             <TouchableOpacity
                 onPress={() => navigation.navigate('Profile')}

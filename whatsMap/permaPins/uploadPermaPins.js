@@ -1,27 +1,40 @@
 const fs = require('fs');
 const admin = require('firebase-admin');
 
-// Since 'require' cannot directly import JSON like an ES module 'import' statement, you need to read the file and then parse it.
-const serviceAccount = JSON.parse(fs.readFileSync('./private-key.json', 'utf8'));
-
-// Initialize your Firebase admin with the service account
-if (admin.apps.length === 0) { // Check if Firebase has already been initialized
+// Initialize Firebase Admin SDK
+if (admin.apps.length === 0) {
+    const serviceAccount = JSON.parse(fs.readFileSync('./private-key.json', 'utf8'));
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });
 }
 
-const db = admin.firestore();  // Use this `db` for all Firestore operations
+const db = admin.firestore();
 
 async function uploadData() {
     const data = fs.readFileSync('permaPins.json', 'utf8');
-    const pins = JSON.parse(data);
+    const newPins = JSON.parse(data);
+    const newPinIds = new Set(newPins.map(pin => pin.id));
 
-    console.log('Pins:', pins);
+    // Fetch all existing pins from Firestore
+    const existingPinsSnapshot = await db.collection("permaPins").get();
 
-    for (const pin of pins) {
+    // Delete pins that are not in the newPins JSON
+    existingPinsSnapshot.docs.forEach(doc => {
+        if (!newPinIds.has(doc.id)) {
+            db.collection("permaPins").doc(doc.id).delete();
+            console.log(`Pin with ID ${doc.id} deleted from Firestore.`);
+        }
+    });
+
+    // Process each new or updated pin
+    for (const pin of newPins) {
+        if (typeof pin.id !== 'string' || pin.id === '') {
+            console.error('Invalid ID:', pin);
+            continue; // Skip this pin
+        }
+
         try {
-            // Check if pin with the same ID already exists in Firestore
             const existingPin = await db.collection("permaPins").doc(pin.id).get();
             if (existingPin.exists) {
                 console.log(`Pin with ID ${pin.id} already exists. Skipping.`);
@@ -37,4 +50,5 @@ async function uploadData() {
     }
 }
 
-uploadData();
+
+uploadData(); //Kjør scriptet ved å cd permaPins: dermed < node uploadPermaPins.js >
