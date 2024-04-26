@@ -28,34 +28,15 @@ export function NavigationFile() {
                 <Stack.Screen
                     name="MAP"
                     component={HomeMap}
-                    options={({ navigation }) => ({
-                        headerRight: () => (
-                            <View style={{ flexDirection: 'row', marginRight: 10 }}>
-                                <Button
-                                    onPress={() => navigation.navigate('Profile')}
-                                    title="Profile"
-                                    color="#000" // Adjust the color as per your theme
-                                />
-                                {!user && (
-                                    <Button
-                                        onPress={() => navigation.navigate('Login')}
-                                        title="Login"
-                                        color="#000" // Adjust the color as per your theme
-                                    />
-                                )}
-                            </View>
-                        )
-                    })}
+                    options={{ headerShown:false }}
                 />
                 <Stack.Screen
                     name="Login"
                     component={Login}
-                    options={({ navigation }) => ({
-
-                    })}
+                    options={{ headerShown:false }}
                 />
-                <Stack.Screen name="Profile" component={Profile}/>
-                <Stack.Screen name="Register" component={Register}/>
+                <Stack.Screen name="Profile" component={Profile} options={{ headerShown:false }}/>
+                <Stack.Screen name="Register" component={Register} options={{ headerShown:false }}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

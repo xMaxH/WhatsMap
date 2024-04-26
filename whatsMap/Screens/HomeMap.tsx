@@ -269,15 +269,20 @@ export default function HomeScreen() {
                 onPress={handleMapPress}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={true}
+                showsMyLocationButton={true}
+                showsCompass={false}
                 region={Grimstad}
                 initialRegion={Grimstad}
                 customMapStyle={mapStyle}
+                mapPadding={{top:40, bottom:0   , left:25, right:25}}
             >
+
                 {showPins && markers.map((marker) => (
                     <Marker
                         key={marker.id}
                         coordinate={marker.coordinate}
                         title={marker.title}
+                        pinColor={marker.userId === undefined ? '#ff0195' : '#01fbff'}
                         onCalloutPress={() => pinPress(marker.id)}
                     >
                         <Callout>
@@ -291,17 +296,17 @@ export default function HomeScreen() {
             </MapView>
             {loading && (
                 <View style={style1.loadingOverlay}>
-                    <ActivityIndicator size="large" color="#0175FF"/>
+                    <ActivityIndicator size={300} color="#0175FF" />
                 </View>
             )}
             <View style={{
                 position: 'absolute',
-                top: 80,
+                top: 60,
                 right: 350,
                 alignItems: 'flex-end'
             }}>
                 <Pressable onPress={togglePins}>
-                    <AntDesign name="retweet" size={40} color="black"/>
+                    <AntDesign  name="retweet" size={40} color="limegreen"/>
                 </Pressable>
             </View>
             <Modal
