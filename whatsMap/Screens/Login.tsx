@@ -14,6 +14,8 @@ import SizedBox from "../Styles/SizedBox";
 import {app} from "../firebaseConfig";
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import React, {useState} from 'react';
+import Register from "./Register";
+
 
 export default function Login({navigation}) {
     const [email, setEmail] = useState('');
@@ -29,6 +31,7 @@ export default function Login({navigation}) {
             console.error("Login failed:", error);
         }
     };
+
     return (
         <View style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
@@ -116,7 +119,7 @@ export default function Login({navigation}) {
                     </TouchableOpacity>
                     <SizedBox height={20}/>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Register')} >
                         <View style={styles.button}>
                             <Text style={styles.buttonTitle}>
                                 Register
