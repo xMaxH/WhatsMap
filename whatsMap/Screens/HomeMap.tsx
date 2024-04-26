@@ -256,7 +256,7 @@ export default function HomeScreen() {
     };
 
     return (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, marginTop: 40}}>
             <View style={style1.chooseCategory}>
                 {options.map(option => (
                     <TouchableOpacity key={option} style={style1.optionBox} onPress={() => handlePress(option)}>
@@ -296,7 +296,7 @@ export default function HomeScreen() {
             )}
             <View style={{
                 position: 'absolute',
-                top: 10,
+                top: 80,
                 right: 350,
                 alignItems: 'flex-end'
             }}>
