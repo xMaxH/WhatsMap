@@ -24,7 +24,6 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
 import { AntDesign } from '@expo/vector-icons';
 import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
-import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs } from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
 
@@ -451,12 +450,6 @@ export default function HomeScreen() {
                                 onChangeText={setTempDescription}
                                 value={tempDescription}
                                 maxLength={300}
-
-                                    style={pinModal.inputdescription}
-                                    placeholder="Description"
-                                    onChangeText={setTempDescription}
-                                    value={tempDescription}
-
                                 />
 
                                 <SelectCategory setCategory={setCategory}/>
