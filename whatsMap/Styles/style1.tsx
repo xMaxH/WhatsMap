@@ -24,7 +24,14 @@ const style1 = StyleSheet.create({
             backgroundColor:"lightblue",
             color:"black"
         },
+    text:{
+        fontSize:20,
+    },
 
+    textheader: {
+        marginTop: 8,
+        fontSize:50,
+    },
     btn1:{
         backgroundColor:"lightblue",
         color:"red",
@@ -62,6 +69,20 @@ const style1 = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    optionBox: {
+        padding: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.5)'
+    },
+    chooseCategory: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        backgroundColor: 'rgba(52, 52, 52, 0.1)'
+    },
+    textCategory: {
+        marginLeft: 30,
+        padding: 10
+    }
 });
 
 
@@ -123,7 +144,7 @@ const pinModal = StyleSheet.create(
             padding: 10,
             width: 250,
             backgroundColor: 'white',
-        },
+        }
 
 
         // Other styles...
