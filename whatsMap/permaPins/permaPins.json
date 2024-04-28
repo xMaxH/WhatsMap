@@ -1,29 +1,409 @@
 [
   {
-    "id": "Pin1",
-    "title": "First Location",
-    "description": "Description of the first location.",
+    "id": "Maccen",
+    "title": "McDonald's Grimstad",
+    "description": "Student mat.",
     "coordinate": {
-      "latitude": 58.35,
-      "longitude": 8.59343
+      "latitude": 58.3419007076298,
+      "longitude": 8.569071252941258
     }
   },
   {
-    "id": "Pin2",
-    "title": "Second Location",
-    "description": "Description of the second location.",
+    "id": "Groos",
+    "title": "Groos stranda",
+    "description": "Sol og bading <3",
     "coordinate": {
-      "latitude": 58.3405,
-      "longitude": 8.59343
+      "latitude": 58.32685352474553,
+      "longitude": 8.580494781381143
     }
   },
   {
-    "id": "Pin4",
-    "title": "HALLO1",
-    "description": "666",
+    "id": "Joker byen",
+    "title": "Joker i byen",
+    "description": "Der sjef bor",
     "coordinate": {
-      "latitude": 58.4405,
-      "longitude": 8.59343
+      "latitude": 58.34307215590427,
+      "longitude": 8.591364888128673
+    }
+  },
+  {
+    "id": "UIA",
+    "title": "Universitetet i Agder",
+    "description": "Campus",
+    "coordinate": {
+      "latitude": 58.33427931895522,
+      "longitude": 8.57720977105154
+    }
+  },
+  {
+    "id": "Levermyr",
+    "title": "Levermyr stadion",
+    "description": "Jerv fotballbane",
+    "coordinate": {
+      "latitude": 58.34576988475894,
+      "longitude": 8.592130270585148
+    }
+  },
+  {
+    "id": "PB Grimstad",
+    "title": "Pizzakeren Grimstad",
+    "description": "Student pizza",
+    "coordinate": {
+      "latitude": 58.34544825203807,
+      "longitude": 8.581113454049332
+    }
+  },
+  {
+    "id": "Fresh Gym",
+    "title": "Fresh Fitness",
+    "description": "Treningssenter",
+    "coordinate": {
+      "latitude": 58.33691129631254,
+      "longitude": 8.576143241366795
+    }
+  },
+  {
+    "id": "Gym36",
+    "title": "Gym36",
+    "description": "Treningssenter",
+    "coordinate": {
+      "latitude": 58.33776521031776,
+      "longitude": 8.580925620011696
+    }
+  },
+
+  {
+    "id": "Family Sports Club",
+    "title": "Family Sports Club",
+    "description": "Treningssenter",
+    "coordinate": {
+      "latitude": 58.34606810234553,
+      "longitude": 8.580699910914596
+    }
+  },
+  {
+    "id": "Bunnpris",
+    "title": "Bunnpris Grimstad",
+    "description": "Søndagsåpen butikk",
+    "coordinate": {
+      "latitude": 58.34598851208708,
+      "longitude": 8.580996415217372
+    }
+  },
+  {
+    "id": "Extra Øygårdsdalen",
+    "title": "Extra Øygårdsdalen",
+    "description": "Søndagsåpen butikk",
+    "coordinate": {
+      "latitude": 58.341767563485746,
+      "longitude": 8.569341752843302
+    }
+  },
+  {
+    "id": "Extra Guldmandsveien",
+    "title": "Extra Guldmandsveien",
+    "description": "Søndagsåpen butikk",
+    "coordinate": {
+      "latitude": 58.33465616317306,
+      "longitude": 8.588699955848755
+    }
+  },
+  {
+    "id": "Meny Grimstad",
+    "title": "Meny Grimstad",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.33524753678918,
+      "longitude": 8.59028245915939
+    }
+  },
+  {
+    "id": "Extra Øygårdsdalen",
+    "title": "Extra Øygårdsdalen",
+    "description": "Søndagsåpen butikk",
+    "coordinate": {
+      "latitude": 58.341767563485746,
+      "longitude": 8.569341752843302
+    }
+  },
+  {
+    "id": "Spar",
+    "title": "Spar Odden",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.33766042597815,
+      "longitude": 8.59311413170375
+    }
+  },
+
+  {
+    "id": "Rema1000 GRØM",
+    "title": "Rema1000 GRØM",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.33936749318587,
+      "longitude": 8.57398461731564
+    }
+  },
+  {
+    "id": "Kiwi Grimstad",
+    "title": "Kiwi Grimstad",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.340063971329954,
+      "longitude": 8.582309669756047
+    }
+  },
+  {
+    "id": "Odden Senteret",
+    "title": "Odden Senteret",
+    "description": "Kjøpesenter",
+    "coordinate": {
+      "latitude": 58.33803985955128,
+      "longitude": 8.593232149249603
+    }
+  },
+  {
+    "id": "Happy time Grimstad",
+    "title": "Happy time Grimstad",
+    "description": "Pizza, kebab og burger",
+    "coordinate": {
+      "latitude": 58.34046841978753,
+      "longitude": 8.593057805664106
+    }
+  },
+  {
+    "id": "Hytta",
+    "title": "Hytta Pizeeria & Cocktailbar",
+    "description": "Gratis levering ",
+    "coordinate": {
+      "latitude": 58.342795102231925,
+      "longitude": 8.591937950652301
+    }
+  },
+  {
+    "id": "Apotekergaarden",
+    "title": "Apotekergaarden",
+    "description": "Restaurant og drikkested ",
+    "coordinate": {
+      "latitude": 58.341748504694436,
+      "longitude": 8.593535546642649
+    }
+  },
+  {
+    "id": "Gaellis",
+    "title": "Galleriet",
+    "description": "Utested",
+    "coordinate": {
+      "latitude": 58.34236722406799,
+      "longitude": 8.592628692338861
+    }
+  },
+  {
+    "id": "Smag og Behag'",
+    "title": "Smag og Behag",
+    "description": "Restaurant",
+    "coordinate": {
+      "latitude": 58.34113789638394,
+      "longitude": 8.593396474700047
+    }
+  },
+  {
+    "id": "Grimstad Vertshus og Kro AS",
+    "title": "Grimstad Vertshus og Kro AS",
+    "description": "Hotell",
+    "coordinate": {
+      "latitude": 58.34615192395888,
+      "longitude": 8.582869592346885
+    }
+  },
+  {
+    "id": "Grimstad Bokseklub",
+    "title": "Grimstad Bokseklub",
+    "description": "Kampsport Boxing",
+    "coordinate": {
+      "latitude": 58.3471430359304,
+      "longitude": 8.583217394579675
+    }
+  },
+  {
+    "id": "Herlighed",
+    "title": "Herlighed Grimstad AS",
+    "description": "Restaurant",
+    "coordinate": {
+      "latitude": 58.340705827142784,
+      "longitude": 8.593056996406256
+    }
+  },
+  {
+    "id": "Kiwi Bergemoen",
+    "title": "Kiwi Bergemoen",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.34298395207833,
+      "longitude": 8.55519865046837
+    }
+  },
+  {
+    "id": "Europris Grimstad",
+    "title": "Europris Grimstad",
+    "description": "Altmulig butikk",
+    "coordinate": {
+      "latitude": 58.3427207088875,
+      "longitude": 8.554694395186031
+    }
+  },
+  {
+    "id": "Kiwi Biesletta",
+    "title": "Kiwi Biesletta",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.34678673968735,
+      "longitude": 8.59698691538415
+    }
+  },
+  {
+    "id": "Politistasjonen i Grimstad",
+    "title": "Politistasjonen i Grimstad",
+    "description": "Politistasjon",
+    "coordinate": {
+      "latitude": 58.346772512520275,
+      "longitude":8.596766102512191
+    }
+  },
+  {
+    "id": "Brannstasjonen",
+    "title": "Brannstasjonen Legesenter",
+    "description": "Legesenter",
+    "coordinate": {
+      "latitude": 58.3461862583323,
+      "longitude":8.599176067302464
+    }
+  },
+  {
+    "id": "Rema1000 Bie",
+    "title": "Rema1000 Bie",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.35164626682472,
+      "longitude":8.59714046339839
+    }
+  },
+  {
+    "id": "Coop Prix Bergemoen",
+    "title": "Coop Prix Bergemoen",
+    "description": "Butikk",
+    "coordinate": {
+      "latitude": 58.33992221208644,
+      "longitude":8.554730868624478
+    }
+  },
+  {
+    "id": "Bluebox",
+    "title": "Bluebox Studentbar",
+    "description": "Drikkested for Studenter",
+    "coordinate": {
+      "latitude": 58.33468272010213,
+      "longitude":8.57754246545477
+    }
+  },
+  {
+    "id": "Skyline",
+    "title": "Skyline",
+    "description": "Utested for 18+",
+    "coordinate": {
+      "latitude": 58.342828409978864,
+      "longitude":8.592275420993465
+    }
+  },
+  {
+    "id": "Loftet Bar",
+    "title": "Loftet Bar",
+    "description": "Utested for 20+",
+    "coordinate": {
+      "latitude": 58.34265279665184,
+      "longitude":8.592753524748312
+    }
+  },
+  {
+    "id": "Sky Fitness",
+    "title": "Sky Fitness",
+    "description": "Treningssenter",
+    "coordinate": {
+      "latitude": 58.34294736065262,
+      "longitude":8.590239490465091
+    }
+  },
+  {
+    "id": "Sparebanken Sør Arena",
+    "title": "Sparebanken Sør Arena",
+    "description": "Gymsal",
+    "coordinate": {
+      "latitude": 58.33529349548472,
+      "longitude":8.573224227645959
+    }
+  },
+  {
+    "id": "Klatreklubb",
+    "title": "Klatreklubb Grimstad",
+    "description": "Innendørs Klatrested",
+    "coordinate": {
+      "latitude": 58.334994994240894,
+      "longitude":8.572373967409249
+    }
+  },
+  {
+    "id": "Svømmehall",
+    "title": "Svømmehall Grimstad",
+    "description": "Innendørs Svømmested",
+    "coordinate": {
+      "latitude": 58.34609027436739,
+      "longitude":8.589977479032179
+    }
+  },
+  {
+    "id": "Golf Lab",
+    "title": "Golf Lab",
+    "description": "Golf simulator osv.",
+    "coordinate": {
+      "latitude": 58.33532252399487,
+      "longitude":8.590546051412392
+    }
+  },
+  {
+    "id": "Biblioteket i Grimstad",
+    "title": "Biblioteket i Grimstad",
+    "description": "Bibliotek for alle!",
+    "coordinate": {
+      "latitude": 58.33983487330759,
+      "longitude":8.593330581060304
+    }
+  },
+  {
+    "id": "Nottos Pølsebod",
+    "title": "Nottos Pølsebod",
+    "description": "Grimstads beste pølser!",
+    "coordinate": {
+      "latitude": 58.34134015270239,
+      "longitude":8.594787944038613
+    }
+  },
+  {
+    "id": "Minigolf",
+    "title": "Minigolf (sommer)",
+    "description": "Utendørs minigolf",
+    "coordinate": {
+      "latitude": 58.34156105682898,
+      "longitude":8.595596966530316
+    }
+  },
+  {
+    "id": "Grimstadhallen",
+    "title": "Grimstadhallen",
+    "description": "Squash, håndball og badminton",
+    "coordinate": {
+      "latitude": 58.33850541148289,
+      "longitude":8.579052447700969
     }
   }
 ]
