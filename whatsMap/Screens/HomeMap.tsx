@@ -9,7 +9,9 @@ import {
     TouchableWithoutFeedback,
     View,
     ActivityIndicator,
-    TouchableOpacity
+    TouchableOpacity,
+    FlatList,
+    ScrollView
 } from 'react-native';
 
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -21,6 +23,7 @@ import { initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
 import { AntDesign } from '@expo/vector-icons';
+import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
 import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs } from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
@@ -45,6 +48,8 @@ export default function HomeScreen() {
     const [viewPinModalVisible, setViewPinModalVisible] = useState(false);
     const [viewingPin, setViewingPin] = useState(null);
     const [newComment, setNewComment] = useState('');
+    const [comments, setComments] = useState([]);
+
     const Grimstad = {
         latitude: 58.3405,
         longitude: 8.59343,
@@ -82,6 +87,14 @@ export default function HomeScreen() {
         }
         fetchAllPins();
     }, [user]);
+
+    useEffect(() => {
+        if (viewPinModalVisible && viewingPin) {
+            fetchComments(viewingPin.id);
+        }
+    }, [viewPinModalVisible, viewingPin]);
+
+
 
     const isOwner = (marker) => {
         return user?.uid === marker?.userId;
@@ -221,33 +234,68 @@ export default function HomeScreen() {
     };
 
 
-
-
     const togglePins = () => {
         setShowPins(!showPins);
     };
-/*
+
     const handleAddComment = async (pinId) => {
-        if (!newComment.trim()) return;  // Prevent empty comments
+        if (!newComment.trim()) {
+            Alert.alert("Error", "Comment cannot be empty.");
+            return;  // Prevent empty comments
+        }
 
         const commentData = {
             text: newComment,
             userId: user.uid,
+            username: user.email,
+            pinId: pinId,
             timestamp: new Date(),
         };
-
         try {
-            const pinCommentsRef = collection(db, 'pins', pinId, 'comments');
+            // Automatically creates a 'comments' subcollection under the 'pins' document if it doesn't exist
+            const pinCommentsRef = collection(db, 'comments');
             await addDoc(pinCommentsRef, commentData);
-            setNewComment('');
-            setIsModalVisible(false);
-            Alert.alert('Comment added successfully');
+            setNewComment('');  // Clear the comment input after submission
+            Alert.alert('Success', 'Comment added successfully');
         } catch (error) {
             console.error('Error adding comment:', error);
-            Alert.alert('Failed to add comment');
+            Alert.alert('Error', 'Failed to add comment');
         }
     };
-*/
+
+    const fetchComments = async (pinId) => {
+        try {
+            const commentsRef = collection(db, 'comments');
+            // Query comments for a specific pinId
+            const q = query(commentsRef, where("pinId", "==", pinId));
+            const querySnapshot = await getDocs(q);
+            // Map over the documents to extract comment data
+            const fetchedComments = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setComments(fetchedComments);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            // Reference to the specific comment document in the top-level 'comments' collection
+            const commentRef = doc(db, 'comments', commentId);
+            await deleteDoc(commentRef);
+
+            // Update local state to remove the comment from the list
+            setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+
+            // Optionally show a confirmation message
+            Alert.alert('Success', 'Comment deleted successfully');
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            Alert.alert('Error', 'Failed to delete comment');
+        }
+    };
 
     const options = ['Party', 'Sport', 'Bars'];
 
@@ -333,6 +381,7 @@ export default function HomeScreen() {
                                                     placeholder="Title"
                                                     onChangeText={setTempTitle}
                                                     value={tempTitle}
+                                                    maxLength={30}
                                                 />
                                                 <Text style={pinModal.subtitletext}>Edit description:</Text>
                                                 <TextInput
@@ -340,6 +389,7 @@ export default function HomeScreen() {
                                                     placeholder="Description"
                                                     onChangeText={setTempDescription}
                                                     value={tempDescription}
+                                                    maxLength={300}
                                                 />
                                                 <View style={pinModal.buttonsavecanellineup}>
                                                     <View style={pinModal.buttonspacebetween}>
@@ -391,13 +441,22 @@ export default function HomeScreen() {
                                     placeholder="Title"
                                     onChangeText={setTempTitle}
                                     value={tempTitle}
+                                    maxLength={30}
                                 />
                                 <Text style={pinModal.subtitletext}>Add description:</Text>
                                 <TextInput
+
+                                style={pinModal.inputdescription}
+                                placeholder="Description"
+                                onChangeText={setTempDescription}
+                                value={tempDescription}
+                                maxLength={300}
+
                                     style={pinModal.inputdescription}
                                     placeholder="Description"
                                     onChangeText={setTempDescription}
                                     value={tempDescription}
+
                                 />
 
                                 <SelectCategory setCategory={setCategory}/>
@@ -435,10 +494,63 @@ export default function HomeScreen() {
                             <View style={pinModal.modalView}>
                                 <Text style={pinModal.titletext}>{viewingPin?.title || "No Title"}</Text>
                                 <Text style={pinModal.subtitletext}>{viewingPin?.description || "No Description"}</Text>
-                                <Button
-                                    title="Close"
-                                    onPress={() => setViewPinModalVisible(false)}
+                                <TextInput
+                                    style={pinModal.input}
+                                    placeholder="Add a comment..."
+                                    value={newComment}
+                                    onChangeText={setNewComment}
+                                    maxLength={300}
                                 />
+                                <Button
+                                    title="Submit Comment"
+                                    onPress={() => {
+                                        if (user) {
+                                            handleAddComment(viewingPin.id);
+                                        } else {
+                                            Alert.alert("Please log in to add comments");
+                                        }
+                                    }}
+                                />
+                                <FlatList
+                                    data={comments}
+                                    keyExtractor={(item) => item.id}
+                                    renderItem={({ item }) => (
+                                        <View style={{ marginBottom: 10 }}>
+                                            <Text style={{ fontWeight: 'bold' }}>{item.username || 'Anonymous'}</Text>
+                                            <Text>{item.text}</Text>
+                                            {/* The timestamp */}
+                                            <Text style={{ fontSize: 12, color: 'grey' }}>
+                                                {item.timestamp.toDate().toLocaleString()}
+                                            </Text>
+                                            {user && user.uid === item.userId && (
+                                                <Button
+                                                    title="Delete"
+                                                    onPress={() => {
+                                                        // Confirm before deleting
+                                                        Alert.alert(
+                                                            'Delete Comment',
+                                                            'Are you sure you want to delete this comment?',
+                                                            [
+                                                                { text: 'Cancel', style: 'cancel' },
+                                                                { text: 'OK', onPress: () => handleDeleteComment(item.id) },
+                                                            ],
+                                                            { cancelable: false }
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                        </View>
+                                    )}
+                                    ListEmptyComponent={<Text>No comments yet</Text>}
+                                    initialNumToRender={5} // Number of items to render in the initial batch
+                                    contentContainerStyle={{ maxHeight: 320 }}
+                                />
+                                    <Button
+                                        title="Close"
+                                        onPress={() => setViewPinModalVisible(false)}
+                                    />
+
+
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
