@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Alert,
     Button,
@@ -14,16 +14,16 @@ import {
     ScrollView
 } from 'react-native';
 
-import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
-import { pinModal, style1 } from "../Styles/style1";
-import { mapStyle } from "../Styles/mapstyle";
+import {pinModal, style1} from "../Styles/style1";
+import {mapStyle} from "../Styles/mapstyle";
 // @ts-ignore
-import { initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence } from 'firebase/auth';
+import {initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { app, db } from "../firebaseConfig";
-import { AntDesign } from '@expo/vector-icons';
-import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
+import {app, db} from "../firebaseConfig";
+import {AntDesign} from '@expo/vector-icons';
+import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot} from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
 
@@ -56,6 +56,8 @@ export default function HomeScreen() {
     const [showPins, setShowPins] = useState(true);
     const [selectedCategories, setSelectedCategories] = useState(new Set());
     const [category, setCategory] = useState('');
+    const [tempCategory, setTempCategory] = useState('');
+
 
     useEffect(() => {
         return onAuthStateChanged(auth, currentUser => {
@@ -80,9 +82,10 @@ export default function HomeScreen() {
             setLoading(true);
             const pins = await loadPinsFromFirestore();
             const permaPins = await loadPermaPins();
-            setMarkers([...pins,...permaPins]);
+            setMarkers([...pins, ...permaPins]);
             setLoading(false);
         }
+
         fetchAllPins();
     }, [user]);
 
@@ -91,7 +94,6 @@ export default function HomeScreen() {
             fetchComments(viewingPin.id);
         }
     }, [viewPinModalVisible, viewingPin]);
-
 
 
     const isOwner = (marker) => {
@@ -105,6 +107,7 @@ export default function HomeScreen() {
                 setEditingMarker(marker);
                 setTempTitle(marker.title);
                 setTempDescription(marker.description);
+                setTempCategory(marker.category);
                 setIsModalVisible(true);
             } else {
                 setViewingPin(marker);
@@ -118,6 +121,7 @@ export default function HomeScreen() {
         const updatedPinData = {
             title: tempTitle,
             description: tempDescription,
+            category: tempCategory, // Include the category
         };
         await updatePinInFirestore(editingMarker.id, updatedPinData);
         const updatedMarkers = markers.map(marker => {
@@ -131,7 +135,9 @@ export default function HomeScreen() {
         setEditingMarker(null);
         setTempTitle('');
         setTempDescription('');
+        setTempCategory(''); // Reset the temporary category
     };
+
 
     const handleMapPress = (event) => {
         if (!user) {
@@ -142,8 +148,8 @@ export default function HomeScreen() {
             alert('You can only create up to 3 markers. Please delete one to add more.');
             return;
         }
-        const { latitude, longitude } = event.nativeEvent.coordinate;
-        setNewPinCoordinates({ latitude, longitude });
+        const {latitude, longitude} = event.nativeEvent.coordinate;
+        setNewPinCoordinates({latitude, longitude});
         setNewPinModalVisible(true);
     };
 
@@ -297,7 +303,7 @@ export default function HomeScreen() {
         }
     };
 
-    const options = ['Food', 'Fitness', 'Shopping', 'Bars', 'Education', 'Sports'];
+    const options = ['Food', 'Fitness', 'Bars', 'Fun', 'Not Fun', 'Other'];
 
     const handlePress = (option) => {
         setSelectedCategories(prev => {
@@ -310,7 +316,6 @@ export default function HomeScreen() {
             return newCategories;
         });
     };
-
 
 
     return (
@@ -347,7 +352,7 @@ export default function HomeScreen() {
                 region={Grimstad}
                 initialRegion={Grimstad}
                 customMapStyle={mapStyle}
-                mapPadding={{top:40, bottom:0   , left:25, right:25}}
+                mapPadding={{top: 40, bottom: 0, left: 25, right: 25}}
             >
 
                 {showPins && markers.filter(marker => selectedCategories.size === 0 || selectedCategories.has(marker.category)).map((marker) => (
@@ -371,7 +376,7 @@ export default function HomeScreen() {
             </MapView>
             {loading && (
                 <View style={style1.loadingOverlay}>
-                    <ActivityIndicator size={300} color="#0175FF" />
+                    <ActivityIndicator size={300} color="#0175FF"/>
                 </View>
             )}
             <View style={{
@@ -381,7 +386,7 @@ export default function HomeScreen() {
                 alignItems: 'flex-end'
             }}>
                 <Pressable onPress={togglePins}>
-                    <AntDesign  name="retweet" size={40} color="limegreen"/>
+                    <AntDesign name="retweet" size={40} color="limegreen"/>
                 </Pressable>
             </View>
             <Modal
@@ -418,6 +423,14 @@ export default function HomeScreen() {
                                                     value={tempDescription}
                                                     maxLength={300}
                                                 />
+                                                <Text style={pinModal.subtitletext}>Edit Category:</Text>
+
+                                                <View>
+                                                    <SelectCategory setCategory={setTempCategory}
+                                                                    selectedCategory={tempCategory}/>
+                                                </View>
+
+
                                                 <View style={pinModal.buttonsavecanellineup}>
                                                     <View style={pinModal.buttonspacebetween}>
                                                         <Button
@@ -473,11 +486,11 @@ export default function HomeScreen() {
                                 <Text style={pinModal.subtitletext}>Add description:</Text>
                                 <TextInput
 
-                                style={pinModal.inputdescription}
-                                placeholder="Description"
-                                onChangeText={setTempDescription}
-                                value={tempDescription}
-                                maxLength={300}
+                                    style={pinModal.inputdescription}
+                                    placeholder="Description"
+                                    onChangeText={setTempDescription}
+                                    value={tempDescription}
+                                    maxLength={300}
                                 />
 
                                 <SelectCategory setCategory={setCategory}/>
@@ -535,12 +548,12 @@ export default function HomeScreen() {
                                 <FlatList
                                     data={comments}
                                     keyExtractor={(item) => item.id}
-                                    renderItem={({ item }) => (
-                                        <View style={{ marginBottom: 10 }}>
-                                            <Text style={{ fontWeight: 'bold' }}>{item.username || 'Anonymous'}</Text>
+                                    renderItem={({item}) => (
+                                        <View style={{marginBottom: 10}}>
+                                            <Text style={{fontWeight: 'bold'}}>{item.username || 'Anonymous'}</Text>
                                             <Text>{item.text}</Text>
                                             {/* The timestamp */}
-                                            <Text style={{ fontSize: 12, color: 'grey' }}>
+                                            <Text style={{fontSize: 12, color: 'grey'}}>
                                                 {item.timestamp.toDate().toLocaleString()}
                                             </Text>
                                             {user && user.uid === item.userId && (
@@ -552,10 +565,13 @@ export default function HomeScreen() {
                                                             'Delete Comment',
                                                             'Are you sure you want to delete this comment?',
                                                             [
-                                                                { text: 'Cancel', style: 'cancel' },
-                                                                { text: 'OK', onPress: () => handleDeleteComment(item.id) },
+                                                                {text: 'Cancel', style: 'cancel'},
+                                                                {
+                                                                    text: 'OK',
+                                                                    onPress: () => handleDeleteComment(item.id)
+                                                                },
                                                             ],
-                                                            { cancelable: false }
+                                                            {cancelable: false}
                                                         );
                                                     }}
                                                 />
@@ -564,12 +580,12 @@ export default function HomeScreen() {
                                     )}
                                     ListEmptyComponent={<Text>No comments yet</Text>}
                                     initialNumToRender={5} // Number of items to render in the initial batch
-                                    contentContainerStyle={{ maxHeight: 320 }}
+                                    contentContainerStyle={{maxHeight: 320}}
                                 />
-                                    <Button
-                                        title="Close"
-                                        onPress={() => setViewPinModalVisible(false)}
-                                    />
+                                <Button
+                                    title="Close"
+                                    onPress={() => setViewPinModalVisible(false)}
+                                />
 
 
                             </View>
