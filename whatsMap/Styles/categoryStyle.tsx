@@ -32,9 +32,11 @@ export const stylesCategory = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
-        backgroundColor: '#DDD',
+        backgroundColor: '#ffffff',
+        borderColor: 'black',
+        borderWidth:2,
         padding: 10,
-        width: 200,
+        width: 250,
         alignItems: 'center'
     },
     text:{
