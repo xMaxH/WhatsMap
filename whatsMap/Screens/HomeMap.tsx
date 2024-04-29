@@ -39,7 +39,6 @@ export default function HomeScreen() {
     const [newPinModalVisible, setNewPinModalVisible] = useState(false);
     const [editingMarker, setEditingMarker] = useState(null);
     const [tempTitle, setTempTitle] = useState('');
-    const [category, setCategory] = useState('');
     const [tempDescription, setTempDescription] = useState('');
     const [newPinCoordinates, setNewPinCoordinates] = useState(null);
     const [user, setUser] = useState(null);
@@ -48,7 +47,6 @@ export default function HomeScreen() {
     const [viewingPin, setViewingPin] = useState(null);
     const [newComment, setNewComment] = useState('');
     const [comments, setComments] = useState([]);
-
     const Grimstad = {
         latitude: 58.3405,
         longitude: 8.59343,
@@ -56,8 +54,9 @@ export default function HomeScreen() {
         longitudeDelta: 0.02,
     };
     const [showPins, setShowPins] = useState(true);
+    const [selectedCategories, setSelectedCategories] = useState(new Set());
+    const [category, setCategory] = useState('');
 
-    console.log("I ame here", category)
     useEffect(() => {
         return onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
@@ -157,6 +156,7 @@ export default function HomeScreen() {
                 coordinate: newPinCoordinates,
                 title: tempTitle,
                 description: tempDescription,
+                category: category, // Make sure this is saved
                 userId: user.uid,
             };
             const savedPinWithUserId = await savePinToFirestore(newMarker);
@@ -165,6 +165,7 @@ export default function HomeScreen() {
             setLoading(false);
         }
     };
+
 
     const savePinToFirestore = async (pin) => {
         try {
@@ -296,21 +297,46 @@ export default function HomeScreen() {
         }
     };
 
-    const options = ['Party', 'Sport', 'Bars'];
+    const options = ['Food', 'Fitness', 'Shopping', 'Bars', 'Education', 'Sports'];
 
-    const handlePress = (option: string) => {
-        console.log("Selected:", option);
+    const handlePress = (option) => {
+        setSelectedCategories(prev => {
+            const newCategories = new Set(prev);
+            if (newCategories.has(option)) {
+                newCategories.delete(option);
+            } else {
+                newCategories.add(option);
+            }
+            return newCategories;
+        });
     };
+
+
 
     return (
         <View style={{flex: 1, marginTop: 40}}>
             <View style={style1.chooseCategory}>
-                {options.map(option => (
-                    <TouchableOpacity key={option} style={style1.optionBox} onPress={() => handlePress(option)}>
-                        <Text style={style1.textCategory}>{option}</Text>
-                    </TouchableOpacity>
-                ))}
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={true}
+                    style={style1.scrollView}
+                    contentContainerStyle={{
+                        alignItems: 'center',
+                    }}
+                >
+                    {options.map(option => (
+                        <TouchableOpacity
+                            key={option}
+                            style={[style1.optionBox, selectedCategories.has(option) ? style1.optionBoxSelected : null]}
+                            onPress={() => handlePress(option)}
+                        >
+                            <Text style={style1.textCategory}>{option}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
             </View>
+
+
             <MapView
                 style={{flex: 1}}
                 onPress={handleMapPress}
@@ -324,7 +350,7 @@ export default function HomeScreen() {
                 mapPadding={{top:40, bottom:0   , left:25, right:25}}
             >
 
-                {showPins && markers.map((marker) => (
+                {showPins && markers.filter(marker => selectedCategories.size === 0 || selectedCategories.has(marker.category)).map((marker) => (
                     <Marker
                         key={marker.id}
                         coordinate={marker.coordinate}
@@ -340,6 +366,8 @@ export default function HomeScreen() {
                         </Callout>
                     </Marker>
                 ))}
+
+
             </MapView>
             {loading && (
                 <View style={style1.loadingOverlay}>

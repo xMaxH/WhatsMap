@@ -12,9 +12,12 @@ const SelectCategory = ({setCategory}) => {
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
     const options: Option[] = [
-        { label: 'Party', value: 'option1' },
-        { label: 'Bars', value: 'option2' },
-        { label: 'Sport', value: 'option3' }
+        { label: 'Food', value: 'food' },
+        { label: 'Fitness', value: 'fitness' },
+        { label: 'Shopping', value: 'shopping' },
+        { label: 'Bars', value: 'bars' },
+        { label: 'Education', value: 'education' },
+        { label: 'Sports', value: 'sports' }
     ];
 
     const handleSelect = (value: string) => {
