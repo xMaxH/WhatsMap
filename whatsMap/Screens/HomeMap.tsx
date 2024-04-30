@@ -23,8 +23,7 @@ import { initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { app, db } from "../firebaseConfig";
 import { AntDesign } from '@expo/vector-icons';
-import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
-import {SelectOutlined} from "@ant-design/icons";
+import { addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where} from 'firebase/firestore';
 import SelectCategory from "./SelectCategory";
 
 export const auth = initializeAuth(app, {
@@ -32,8 +31,8 @@ export const auth = initializeAuth(app, {
 });
 
 export default function HomeScreen() {
-    const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [setLocation] = useState(null);
+    const [setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [newPinModalVisible, setNewPinModalVisible] = useState(false);
@@ -350,18 +349,36 @@ export default function HomeScreen() {
                 mapPadding={{top:40, bottom:0   , left:25, right:25}}
             >
 
-                {showPins && markers.filter(marker => selectedCategories.size === 0 || selectedCategories.has(marker.category)).map((marker) => (
+                {markers.filter(marker=>selectedCategories.size===0||selectedCategories.has(marker.category)).map((permaPin)=>(
                     <Marker
-                        key={marker.id}
-                        coordinate={marker.coordinate}
-                        title={marker.title}
-                        pinColor={marker.userId === undefined ? '#ff0195' : '#01fbff'}
-                        onCalloutPress={() => pinPress(marker.id)}
+                        key={permaPin.id}
+                        coordinate={permaPin.coordinate}
+                        title={permaPin.title}
+                        pinColor='#ff0195'  // assuming permanent pins have a unique color
+                        onCalloutPress={() => pinPress(permaPin.id)}
                     >
                         <Callout>
                             <View>
-                                <Text>{marker.title}</Text>
-                                <Text>{marker.description}</Text>
+                                <Text>{permaPin.title}</Text>
+                                <Text>{permaPin.description}</Text>
+                            </View>
+                        </Callout>
+                    </Marker>
+                ))}
+
+                {/* Conditionally render user pins */}
+                {showPins && markers.filter(marker => marker.userId).map((userPin) => (
+                    <Marker
+                        key={userPin.id}
+                        coordinate={userPin.coordinate}
+                        title={userPin.title}
+                        pinColor='#01fbff' // assuming user pins have a unique color
+                        onCalloutPress={() => pinPress(userPin.id)}
+                    >
+                        <Callout>
+                            <View>
+                                <Text>{userPin.title}</Text>
+                                <Text>{userPin.description}</Text>
                             </View>
                         </Callout>
                     </Marker>
