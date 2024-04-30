@@ -31,7 +31,7 @@ export const auth = initializeAuth(app, {
 });
 
 export default function HomeScreen() {
-    const [setLocation] = useState(null);
+    const [location, setLocation] = useState(null);
     const [setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -349,36 +349,18 @@ export default function HomeScreen() {
                 mapPadding={{top:40, bottom:0   , left:25, right:25}}
             >
 
-                {markers.filter(marker=>selectedCategories.size===0||selectedCategories.has(marker.category)).map((permaPin)=>(
+                {showPins && markers.filter(marker => selectedCategories.size === 0 || selectedCategories.has(marker.category)).map((marker) => (
                     <Marker
-                        key={permaPin.id}
-                        coordinate={permaPin.coordinate}
-                        title={permaPin.title}
-                        pinColor='#ff0195'  // assuming permanent pins have a unique color
-                        onCalloutPress={() => pinPress(permaPin.id)}
+                        key={marker.id}
+                        coordinate={marker.coordinate}
+                        title={marker.title}
+                        pinColor={marker.userId === undefined ? '#ff0195' : '#01fbff'}
+                        onCalloutPress={() => pinPress(marker.id)}
                     >
                         <Callout>
                             <View>
-                                <Text>{permaPin.title}</Text>
-                                <Text>{permaPin.description}</Text>
-                            </View>
-                        </Callout>
-                    </Marker>
-                ))}
-
-                {/* Conditionally render user pins */}
-                {showPins && markers.filter(marker => marker.userId).map((userPin) => (
-                    <Marker
-                        key={userPin.id}
-                        coordinate={userPin.coordinate}
-                        title={userPin.title}
-                        pinColor='#01fbff' // assuming user pins have a unique color
-                        onCalloutPress={() => pinPress(userPin.id)}
-                    >
-                        <Callout>
-                            <View>
-                                <Text>{userPin.title}</Text>
-                                <Text>{userPin.description}</Text>
+                                <Text>{marker.title}</Text>
+                                <Text>{marker.description}</Text>
                             </View>
                         </Callout>
                     </Marker>
