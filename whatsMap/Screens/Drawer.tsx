@@ -2,12 +2,9 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity} from "react-native";
 import loginStyle from "../Styles/authStyle";
-import SizedBox from "../Styles/SizedBox";
-import {app} from "../firebaseConfig";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import HomeScreen, {auth} from "./HomeMap";
+import {auth} from "./HomeMap";
 import {onAuthStateChanged} from "firebase/auth";
-
 
 
 export default function Drawer({navigation})
@@ -46,18 +43,18 @@ export default function Drawer({navigation})
                 </View>
             </TouchableOpacity>)}
 
-
+            {user && (
             <TouchableOpacity
-                onPress={() => navigation.navigate('Home')}
+                onPress={() => navigation.navigate('MyPins')}
             >
                 <View style={styles.buttonDrawer}>
                     <Icon name="map-marker"
                           size={25}
                           style={styles.iconButtonDrawer}
                     />
-                    <Text style={styles.textButtonDrawer}>Pined Map</Text>
+                    <Text style={styles.textButtonDrawer}>My pins</Text>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity>)}
 
             {user && (
             <TouchableOpacity
