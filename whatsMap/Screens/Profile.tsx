@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
+import {onAuthStateChanged, signOut} from 'firebase/auth';
 import {style1} from '../Styles/style1';
 // @ts-ignore
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import {app}from "../firebaseConfig"
 import {auth} from "./HomeMap"
 
 const Profile = ({navigation}) => {
