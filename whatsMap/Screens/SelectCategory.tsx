@@ -1,29 +1,43 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import {stylesCategory} from "../Styles/categoryStyle";
+import React, { useState, useEffect } from 'react';
+import { View, Text, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { stylesCategory } from "../Styles/categoryStyle";
 
 type Option = {
     label: string;
     value: string;
 };
 
-const SelectCategory = ({setCategory}) => {
+type SelectCategoryProps = {
+    setCategory: (category: string) => void;
+    selectedCategory?: string; // Optional prop to display current selection
+};
+
+const SelectCategory: React.FC<SelectCategoryProps> = ({ setCategory, selectedCategory }) => {
     const [selectedValue, setSelectedValue] = useState<string>('');
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
     const options: Option[] = [
         { label: 'Food', value: 'food' },
         { label: 'Fitness', value: 'fitness' },
-        { label: 'Shopping', value: 'shopping' },
         { label: 'Bars', value: 'bars' },
-        { label: 'Education', value: 'education' },
-        { label: 'Sports', value: 'sports' }
+        { label: 'Fun', value: 'fun' },
+        { label: 'Not Fun', value: 'not_fun' },
+        { label: 'Other', value: 'other' }
     ];
+
+    useEffect(() => {
+        // Set the initial selected value based on the selectedCategory prop
+        if (selectedCategory) {
+            const initialOption = options.find(option => option.label === selectedCategory);
+            if (initialOption) {
+                setSelectedValue(initialOption.value);
+            }
+        }
+    }, [selectedCategory]);  // Ensure it updates if selectedCategory changes
 
     const handleSelect = (value: string) => {
         setSelectedValue(value);
         setModalVisible(false);
-
         const selectedOption = options.find(option => option.value === value);
         if (selectedOption) {
             setCategory(selectedOption.label);
@@ -59,9 +73,7 @@ const SelectCategory = ({setCategory}) => {
                 </TouchableWithoutFeedback>
             </Modal>
         </View>
-
     );
 };
-
 
 export default SelectCategory;
