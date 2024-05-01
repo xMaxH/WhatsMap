@@ -1,13 +1,9 @@
-import {StyleSheet, Dimensions} from "react-native";
-
-
-const { height: screenY } = Dimensions.get("window");
+import {StyleSheet} from "react-native";
 
 const style1 = StyleSheet.create({
 
     container:
         {
-
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
@@ -71,7 +67,7 @@ const style1 = StyleSheet.create({
     },     optionBox: {
         paddingVertical: 12, // Increase vertical padding
         paddingHorizontal: 10,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)', // Very light transparent background
+        backgroundColor: 'rgba(255,255,255,0.46)', // Very light transparent background
         borderRadius: 20,
         marginHorizontal: 5,
         borderWidth: 1,
@@ -82,15 +78,15 @@ const style1 = StyleSheet.create({
         borderColor: 'rgba(0, 0, 139, 0.6)', // Noticeably darker border for selected state
     },
     textCategory: {
-        fontSize: 16,
-        color: 'black',
+        fontSize: 14,
         backgroundColor: 'transparent', // Ensure no background interrupts
         textAlign: 'center', // Center text if not already set
     },
 
     scrollView: {
-        paddingHorizontal: 20,
-        height: 60, // Adjust height to ensure it's enough to show text
+        paddingHorizontal: 0,
+        marginVertical:-10,
+        height: 50, // Adjust height to ensure it's enough to show text
     },
     chooseCategory: {
         flexDirection: 'row',
@@ -99,6 +95,7 @@ const style1 = StyleSheet.create({
         paddingVertical: 10,
         backgroundColor: 'transparent',
         position: 'absolute',
+        borderWidth:1,
         top: 0,
         left: 0,
         right: 0,
@@ -121,6 +118,7 @@ const pinModal = StyleSheet.create(
             fontWeight: 'bold',
         },
         subtitletext: {
+            alignContent:'center',
             fontSize: 20,
             fontWeight: 'bold',
         },
