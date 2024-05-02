@@ -57,6 +57,15 @@ const style1 = StyleSheet.create({
         justifyContent: 'center',
     },
 
+    Deleteaccountbtn: {
+        alignItems: 'center',
+        backgroundColor: 'red',
+        borderRadius: 8,
+        marginTop: 10,
+        height: 48,
+        justifyContent: 'center',
+    },
+
     loadingOverlay: {
         position: 'absolute',
         left: 0,
