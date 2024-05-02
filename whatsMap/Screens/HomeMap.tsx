@@ -21,8 +21,8 @@ import {mapStyle} from "../Styles/mapstyle";
 // @ts-ignore
 import {initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { app, db } from "../firebaseConfig";
-import { AntDesign } from '@expo/vector-icons';
+import {app, db} from "../firebaseConfig";
+import {AntDesign} from '@expo/vector-icons';
 import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot} from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
@@ -57,7 +57,15 @@ export default function HomeScreen() {
     const [selectedCategories, setSelectedCategories] = useState(new Set());
     const [category, setCategory] = useState('');
     const [tempCategory, setTempCategory] = useState('');
-
+    const categoryColors = {
+        userPins: '#000000',
+        Food: '#FF6347',
+        Fitness: '#4682B4',
+        Bars: '#DA70D6',
+        Fun: '#32CD32',
+        NotFun: '#FFD700',
+        Other: '#40E0D0'
+    };
 
     useEffect(() => {
         return onAuthStateChanged(auth, currentUser => {
@@ -221,7 +229,6 @@ export default function HomeScreen() {
             console.error('Error updating pin:', error);
         }
     };
-
     const deletePinFromFirestore = async (pinId) => {
         try {
             const pinRef = doc(db, 'pins', pinId);
@@ -258,7 +265,6 @@ export default function HomeScreen() {
             timestamp: new Date(),
         };
         try {
-            // Automatically creates a 'comments' subcollection under the 'pins' document if it doesn't exist
             const pinCommentsRef = collection(db, 'comments');
             await addDoc(pinCommentsRef, commentData);
             setNewComment('');  // Clear the comment input after submission
@@ -288,14 +294,9 @@ export default function HomeScreen() {
 
     const handleDeleteComment = async (commentId) => {
         try {
-            // Reference to the specific comment document in the top-level 'comments' collection
             const commentRef = doc(db, 'comments', commentId);
             await deleteDoc(commentRef);
-
-            // Update local state to remove the comment from the list
             setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
-
-            // Optionally show a confirmation message
             Alert.alert('Success', 'Comment deleted successfully');
         } catch (error) {
             console.error('Error deleting comment:', error);
@@ -303,15 +304,24 @@ export default function HomeScreen() {
         }
     };
 
-    const options = ['Food', 'Fitness', 'Bars', 'Fun', 'Not Fun', 'Other'];
+    const options = ['userPins', 'Food', 'Fitness', 'Bars', 'Fun', 'NotFun', 'Other'];
 
     const handlePress = (option) => {
         setSelectedCategories(prev => {
             const newCategories = new Set(prev);
-            if (newCategories.has(option)) {
-                newCategories.delete(option);
+            if (option === 'userPins') {
+                if (newCategories.has(option)) {
+                    newCategories.delete(option);
+                } else {
+                    newCategories.clear(); // Clear other categories if 'userPins' is selected
+                    newCategories.add(option);
+                }
             } else {
-                newCategories.add(option);
+                if (newCategories.has(option)) {
+                    newCategories.delete(option);
+                } else {
+                    newCategories.add(option);
+                }
             }
             return newCategories;
         });
@@ -332,11 +342,19 @@ export default function HomeScreen() {
                     {options.map(option => (
                         <TouchableOpacity
                             key={option}
-                            style={[style1.optionBox, selectedCategories.has(option) ? style1.optionBoxSelected : null]}
+                            style={[
+                                style1.optionBox,
+                                {backgroundColor: categoryColors[option]}, // Use category color
+                                selectedCategories.has(option) ? {opacity: 1} : {opacity: 0.5}, // Change opacity based on selection
+                                option === 'userPins' && {backgroundColor: '#000', borderColor: '#fff'}, // Set background and border color for 'userPins'
+                            ]}
                             onPress={() => handlePress(option)}
                         >
-                            <Text style={style1.textCategory}>{option}</Text>
+                            <Text
+                                style={[style1.textCategory, option === 'userPins' && {color: '#fff'}]}>{option}</Text>
                         </TouchableOpacity>
+
+
                     ))}
                 </ScrollView>
             </View>
@@ -354,26 +372,42 @@ export default function HomeScreen() {
                 customMapStyle={mapStyle}
                 mapPadding={{top: 40, bottom: 0, left: 25, right: 25}}
             >
-
-                {showPins && markers.filter(marker => selectedCategories.size === 0 || selectedCategories.has(marker.category)).map((marker) => (
-                    <Marker
-                        key={marker.id}
-                        coordinate={marker.coordinate}
-                        title={marker.title}
-                        pinColor={marker.userId === undefined ? '#ff0195' : '#01fbff'}
-                        onCalloutPress={() => pinPress(marker.id)}
-                    >
-                        <Callout>
-                            <View>
-                                <Text>{marker.title}</Text>
-                                <Text>{marker.description}</Text>
-                            </View>
-                        </Callout>
-                    </Marker>
-                ))}
-
-
+                {showPins &&
+                    markers
+                        .filter(marker =>
+                            selectedCategories.size === 0 ||
+                            selectedCategories.has(marker.category) ||
+                            (selectedCategories.has('userPins') && marker.userId)
+                        )
+                        .map(marker => (
+                            <Marker
+                                key={marker.id}
+                                coordinate={marker.coordinate}
+                                title={marker.title}
+                                pinColor={
+                                    user && user.uid === marker.userId
+                                        ? undefined
+                                        : categoryColors[marker.category] || '#7e7962'
+                                }
+                                icon={
+                                    (user && user.uid === marker.userId ? require('../assets/USERpin.png')
+                                        : marker.userId ? require('../assets/otherUSERpin.png')
+                                            : undefined)
+                                }
+                                onCalloutPress={() => pinPress(marker.id)}
+                            >
+                                <Callout>
+                                    <View>
+                                        <Text>{marker.title}</Text>
+                                        <Text>{marker.description}</Text>
+                                    </View>
+                                </Callout>
+                            </Marker>
+                        ))
+                }
             </MapView>
+
+
             {loading && (
                 <View style={style1.loadingOverlay}>
                     <ActivityIndicator size={300} color="#0175FF"/>
@@ -550,7 +584,7 @@ export default function HomeScreen() {
                                     data={comments}
                                     keyExtractor={(item) => item.id}
                                     renderItem={({item}) => (
-                                        <View style={{marginBottom: 10, marginHorizontal:20}}>
+                                        <View style={{marginBottom: 10, marginHorizontal: 20}}>
                                             <Text style={{fontWeight: 'bold'}}>{item.username || 'Anonymous'}</Text>
                                             <Text>{item.text}</Text>
                                             {/* The timestamp */}
@@ -561,7 +595,6 @@ export default function HomeScreen() {
                                                 <Button
                                                     title="Delete"
                                                     onPress={() => {
-                                                        // Confirm before deleting
                                                         Alert.alert(
                                                             'Delete Comment',
                                                             'Are you sure you want to delete this comment?',
