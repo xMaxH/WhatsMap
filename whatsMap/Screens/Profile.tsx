@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Button, Text, TouchableOpacity, View} from 'react-native';
 import {getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
 import {style1} from '../Styles/style1';
 // @ts-ignore
@@ -26,6 +26,29 @@ const Profile = ({navigation}) => {
         }
     };
 
+    //Google logout
+    const handleSignOut = async () => {
+        try {
+            await signOut(auth);
+            setUser(null);
+            navigation.navigate('Home');
+        } catch (error) {
+            console.error('Sign-out error:', error);
+        }
+    };
+/*
+           <View>
+                {!user ? (
+                    <View>
+                        <Text>Welcome, {user.displayName}! Email: {user.email}</Text>
+                        <TouchableOpacity onPress={handleSignOut} style={style1.Logoutbtn}>
+                            <Text style={style1.text2}>Logout</Text>
+                        </TouchableOpacity>
+                    </View>
+                ): null}
+            </View>
+
+ */
     return (
         <View style={style1.container}>
             {user ? ( // Displays user info
@@ -39,6 +62,7 @@ const Profile = ({navigation}) => {
                 <Text style={style1.text1}>Not signed in</Text>
             )}
         </View>
+
     );
 };
 export default Profile;

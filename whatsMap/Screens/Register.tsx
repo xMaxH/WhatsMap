@@ -6,7 +6,8 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
+    ScrollView
 } from "react-native";
 import sinUpStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
@@ -38,10 +39,10 @@ export default function Register({navigation}) {
             return;
         }
 
-        if (!isValidPassword(password)) {
+        /*if (!isValidPassword(password)) {
             alert('Password must be at least 8 characters long, include at least one uppercase letter, one number, and one special character.');
             return;
-        }
+        }*/
 
         try {
             const auth = getAuth(app);
@@ -54,7 +55,7 @@ export default function Register({navigation}) {
     };
 
     return (
-        <View style={styles.root}>
+        <ScrollView style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -105,7 +106,6 @@ export default function Register({navigation}) {
                                 textContentType="password"
                                 onChangeText={(text) => {
                                     setPassword(text);
-                                    setPasswordError(isValidPassword(text) ? '' : 'Password must include at least 8 chars, 1 uppercase, 1 number, 1 special char');
                                 }}
                             />
                             <Text style={styles.text}>{passwordError}</Text>
@@ -144,6 +144,6 @@ export default function Register({navigation}) {
 
                 </KeyboardAvoidingView>
             </SafeAreaView>
-        </View>
+        </ScrollView>
     );
 }

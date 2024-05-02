@@ -24,6 +24,8 @@ const style1 = StyleSheet.create({
         fontSize:20,
     },
 
+
+
     textheader: {
         marginTop: 8,
         fontSize:50,
@@ -87,6 +89,7 @@ const style1 = StyleSheet.create({
         paddingHorizontal: 0,
         marginVertical:-10,
         height: 50, // Adjust height to ensure it's enough to show text
+        maxHeight:320
     },
     chooseCategory: {
         flexDirection: 'row',

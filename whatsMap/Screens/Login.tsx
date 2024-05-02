@@ -7,19 +7,35 @@ import {
     TextInput,
     TextInputComponent, TouchableOpacity,
     View,
-    KeyboardAvoidingViewProps, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent
+    KeyboardAvoidingViewProps, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent,
+    ScrollView
 } from "react-native";
 import loginStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
 import {app} from "../firebaseConfig";
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
-import React, {useState} from 'react';
-import Register from "./Register";
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+} from 'firebase/auth';
+import React, {useState, useEffect} from 'react';
+import {auth} from "./HomeMap";
+import firebase from "firebase/compat";
+import User = firebase.User;
+
+
+
 
 
 export default function Login({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [userInfo, setUserInfo] = useState('');
+    const [user, setUser] = useState(null);
+    const provider = new GoogleAuthProvider();
     const styles = loginStyle
     const login = async () => {
         try {
@@ -32,19 +48,27 @@ export default function Login({navigation}) {
         }
     };
 
+    const handleSignIn = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            setUser(user);
+        } catch (error) {
+            console.error('Google sign-in error:', error);
+        }
+    };
+
+
     return (
-        <View style={styles.root}>
+        <ScrollView style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
                     <Text style={styles.title}>Login</Text>
                     <SizedBox height={100}/>
 
-
-                    <TouchableOpacity>
-                        <View style={styles.buttonGoogle}>
-                            <Text>Login with google</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <View>
+                        <Button title="Sign In with Google" onPress={handleSignIn} />
+                    </View>
 
                     <SizedBox height={50}/>
 
@@ -130,7 +154,7 @@ export default function Login({navigation}) {
 
                 </KeyboardAvoidingView>
             </SafeAreaView>
-        </View>
-    )
-        ;
-}
+        </ScrollView>
+    );
+
+};
