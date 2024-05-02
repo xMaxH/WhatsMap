@@ -246,11 +246,6 @@ export default function HomeScreen() {
         setLoading(false);
     };
 
-
-    const togglePins = () => {
-        setShowPins(!showPins);
-    };
-
     const handleAddComment = async (pinId) => {
         if (!newComment.trim()) {
             Alert.alert("Error", "Comment cannot be empty.");
@@ -344,9 +339,9 @@ export default function HomeScreen() {
                             key={option}
                             style={[
                                 style1.optionBox,
-                                {backgroundColor: categoryColors[option]}, // Use category color
-                                selectedCategories.has(option) ? {opacity: 1} : {opacity: 0.5}, // Change opacity based on selection
-                                option === 'userPins' && {backgroundColor: '#000', borderColor: '#fff'}, // Set background and border color for 'userPins'
+                                {backgroundColor: categoryColors[option]},
+                                selectedCategories.has(option) ? {opacity: 1} : {opacity: 0.5},
+                                option === 'userPins' && {backgroundColor: '#000', borderColor: '#fff'},
                             ]}
                             onPress={() => handlePress(option)}
                         >
@@ -413,16 +408,6 @@ export default function HomeScreen() {
                     <ActivityIndicator size={300} color="#0175FF"/>
                 </View>
             )}
-            <View style={{
-                position: 'absolute',
-                top: 60,
-                right: 350,
-                alignItems: 'flex-end'
-            }}>
-                <Pressable onPress={togglePins}>
-                    <AntDesign name="retweet" size={40} color="limegreen"/>
-                </Pressable>
-            </View>
             <Modal
                 animationType="slide"
                 transparent={true}
