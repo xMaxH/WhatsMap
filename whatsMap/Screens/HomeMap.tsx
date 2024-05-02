@@ -499,15 +499,15 @@ export default function HomeScreen() {
                                 <View style={pinModal.buttonsavecanellineup}>
                                     <View style={pinModal.buttonspacebetween}>
                                         <Button
-                                            title="Submit"
-                                            onPress={handleSaveNewPin}
+                                            title="Cancel"
+                                            color="red"
+                                            onPress={() => setNewPinModalVisible(false)}
                                         />
                                     </View>
                                     <View style={pinModal.buttonspacebetween}>
                                         <Button
-                                            title="Cancel"
-                                            color="red"
-                                            onPress={() => setNewPinModalVisible(false)}
+                                            title="Submit"
+                                            onPress={handleSaveNewPin}
                                         />
                                     </View>
                                 </View>
