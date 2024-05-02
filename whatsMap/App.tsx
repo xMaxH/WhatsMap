@@ -4,14 +4,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { onAuthStateChanged } from 'firebase/auth';
-
-
 import Login from "./Screens/Login";
 import HomeScreen, { auth } from "./Screens/HomeMap";
 import Profile from "./Screens/Profile";
 import Drawer from "./Screens/Drawer";
 import Register from "./Screens/Register";
-import AboutUs from "./Screens/AboutUs"; // Assuming you use it somewhere else
+import MyPins from "./Screens/MyPins";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -32,7 +30,7 @@ export default function App() {
                 <Tab.Screen name="Login" component={Login}
                             options={{
                                 tabBarLabel: 'Login',
-                                tabBarIcon: ({ color }) => (
+                                tabBarIcon: () => (
                                     <Icon name="login" size={25} />
                                 )
                             }}
@@ -42,7 +40,7 @@ export default function App() {
                         options={{
                             headerShown: false,
                             tabBarLabel: 'Home',
-                            tabBarIcon: ({ color }) => (
+                            tabBarIcon: () => (
                                 <Icon name="home-map-marker" size={25} />
                             ),
                         }}
@@ -51,7 +49,7 @@ export default function App() {
                 <Tab.Screen name="Profile" component={Profile}
                             options={{
                                 tabBarLabel: 'Profile',
-                                tabBarIcon: ({ color }) => (
+                                tabBarIcon: () => (
                                     <Icon name="account" size={25} />
                                 )
                             }}
@@ -60,7 +58,7 @@ export default function App() {
             <Tab.Screen name="Explore" component={Drawer}
                         options={{
                             tabBarLabel: 'Explore',
-                            tabBarIcon: ({ color }) => (
+                            tabBarIcon: () => (
                                 <Icon name="monitor-screenshot" size={25} />
                             )
                         }}
@@ -73,12 +71,11 @@ export default function App() {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Main" component={MainTabScreen} />
                 <Stack.Screen name="Register" component={Register} options={{ headerShown: true}}/>
-                {/* If AboutUs is used, you might want to include it in navigation as well */}
+                <Stack.Screen name="MyPins" component={MyPins} options={{ headerShown: true}}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
 }
-
 
 /*
 import Login from "./Screens/Login";

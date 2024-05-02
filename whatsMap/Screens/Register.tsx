@@ -22,12 +22,12 @@ export default function Register({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordError, setPasswordError] = useState('');
+    const [passwordError] = useState('');
 
 
     const isValidPassword = (password) => {
         // Regex that checks for minimum 8 characters, at least one uppercase letter, one number, and one special character
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~"£¤/=¨`'-_|§€]).{8,}$/;
         return regex.test(password);
     };
 
@@ -47,9 +47,8 @@ export default function Register({navigation}) {
         try {
             const auth = getAuth(app);
             await createUserWithEmailAndPassword(auth, email, password);
-            navigation.navigate('MAP');
+            navigation.navigate('Main');
         } catch (error) {
-            console.error("ERROR", error);
             alert('Registration failed. Please check your inputs and try again.');
         }
     };
@@ -58,7 +57,7 @@ export default function Register({navigation}) {
         <ScrollView style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={styles.content}
                 >
                     <Text style={styles.title}>Register New Account</Text>
@@ -100,7 +99,6 @@ export default function Register({navigation}) {
                                 autoCapitalize="none"
                                 secureTextEntry
                                 autoCorrect={false}
-                                keyboardType="visible-password"
                                 returnKeyType="next"
                                 style={styles.textInput}
                                 textContentType="password"
