@@ -545,43 +545,42 @@ export default function HomeScreen() {
                                         }
                                     }}
                                 />
-                                <ScrollView>
-                                    <FlatList
-                                        data={comments}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({item}) => (
-                                            <View style={{marginBottom: 10}}>
-                                                <Text style={{fontWeight: 'bold'}}>{item.username || 'Anonymous'}</Text>
-                                                <Text>{item.text}</Text>
-                                                {/* The timestamp */}
-                                                <Text style={{fontSize: 12, color: 'grey'}}>
-                                                    {item.timestamp.toDate().toLocaleString()}
-                                                </Text>
-                                                {user && user.uid === item.userId && (
-                                                    <Button
-                                                        title="Delete"
-                                                        onPress={() => {
-                                                            // Confirm before deleting
-                                                            Alert.alert(
-                                                                'Delete Comment',
-                                                                'Are you sure you want to delete this comment?',
-                                                                [
-                                                                    {text: 'Cancel', style: 'cancel'},
-                                                                    {
-                                                                        text: 'OK',
-                                                                        onPress: () => handleDeleteComment(item.id)
-                                                                    },
-                                                                ],
-                                                                {cancelable: false}
-                                                            );
-                                                        }}
-                                                    />
-                                                )}
-                                            </View>
-                                        )}
-                                        ListEmptyComponent={<Text>No comments yet</Text>}
-                                    />
-                                </ScrollView>
+
+                                <FlatList
+                                    data={comments}
+                                    keyExtractor={(item) => item.id}
+                                    renderItem={({item}) => (
+                                        <View style={{marginBottom: 10, marginHorizontal:20}}>
+                                            <Text style={{fontWeight: 'bold'}}>{item.username || 'Anonymous'}</Text>
+                                            <Text>{item.text}</Text>
+                                            {/* The timestamp */}
+                                            <Text style={{fontSize: 12, color: 'grey'}}>
+                                                {item.timestamp.toDate().toLocaleString()}
+                                            </Text>
+                                            {user && user.uid === item.userId && (
+                                                <Button
+                                                    title="Delete"
+                                                    onPress={() => {
+                                                        // Confirm before deleting
+                                                        Alert.alert(
+                                                            'Delete Comment',
+                                                            'Are you sure you want to delete this comment?',
+                                                            [
+                                                                {text: 'Cancel', style: 'cancel'},
+                                                                {
+                                                                    text: 'OK',
+                                                                    onPress: () => handleDeleteComment(item.id)
+                                                                },
+                                                            ],
+                                                            {cancelable: false}
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                        </View>
+                                    )}
+                                    ListEmptyComponent={<Text>No comments yet</Text>}
+                                />
                                 <Button
                                     title="Close"
                                     onPress={() => setViewPinModalVisible(false)}
