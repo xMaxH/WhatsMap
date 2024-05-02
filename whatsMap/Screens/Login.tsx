@@ -8,7 +8,8 @@ import {
     TextInputComponent, TouchableOpacity,
     View,
     KeyboardAvoidingViewProps, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent,
-    ScrollView
+    ScrollView,
+    Alert
 } from "react-native";
 import loginStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
@@ -39,14 +40,30 @@ export default function Login({navigation}) {
     const styles = loginStyle
     const login = async () => {
         try {
-            const auth = getAuth(app);
+            const auth = getAuth();
             await signInWithEmailAndPassword(auth, email, password);
-            console.log("Logged in successfully");
+            console.log('Logged in successfully');
             navigation.navigate('Home');
         } catch (error) {
-            console.error("Login failed:", error);
+            if (error.code === 'auth/user-not-found') {
+                // User does not exist, show alert
+                Alert.alert(
+                    'User Not Found',
+                    'You must register a user before logging in.',
+                    [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+                );
+            } else {
+                // Other errors, show the error message
+                Alert.alert(
+                    'Login Error',
+                    'You must register a user before logging in.',
+                    [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+                );
+            }
         }
     };
+
+
 
     const handleSignIn = async () => {
         try {
@@ -57,7 +74,6 @@ export default function Login({navigation}) {
             console.error('Google sign-in error:', error);
         }
     };
-
 
     return (
         <ScrollView style={styles.root}>
@@ -129,10 +145,6 @@ export default function Login({navigation}) {
                         </View>
                     </Pressable>
                     <SizedBox height={16}/>
-
-                    <View style={styles.forgotPasswordContainer}>
-                        <Text style={styles.textButton}>Forgot password?</Text>
-                    </View>
 
                     <SizedBox height={16}/>
 
