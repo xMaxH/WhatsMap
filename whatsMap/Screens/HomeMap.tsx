@@ -21,8 +21,8 @@ import {mapStyle} from "../Styles/mapstyle";
 // @ts-ignore
 import {initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import {app, db} from "../firebaseConfig";
-import {AntDesign} from '@expo/vector-icons';
+import { app, db } from "../firebaseConfig";
+import { AntDesign } from '@expo/vector-icons';
 import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot} from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
@@ -33,7 +33,7 @@ export const auth = initializeAuth(app, {
 
 export default function HomeScreen() {
     const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [setErrorMsg] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [newPinModalVisible, setNewPinModalVisible] = useState(false);
