@@ -11,7 +11,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     FlatList,
-    ScrollView
+    ScrollView,
 } from 'react-native';
 
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -23,7 +23,7 @@ import {initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence} 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {app, db} from "../firebaseConfig";
 import {AntDesign} from '@expo/vector-icons';
-import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot} from 'firebase/firestore';
+import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs,getDoc, query, where, onSnapshot} from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
 
@@ -66,12 +66,28 @@ export default function HomeScreen() {
         NotFun: '#FFD700',
         Other: '#40E0D0'
     };
+    const options = ['userPins', 'Food', 'Fitness', 'Bars', 'Fun', 'NotFun', 'Other'];
+    const [zoomLevel, setZoomLevel] = useState(10); // Default zoom level
+
 
     useEffect(() => {
-        return onAuthStateChanged(auth, currentUser => {
-            setUser(currentUser);
+        return onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    setUser({ ...currentUser, username: userData.username });
+                } else {
+                    setUser({ ...currentUser, username: '' }); // Handle case where user data doesn't exist
+                }
+            } else {
+                setUser(null);
+            }
         });
     }, []);
+
+
 
     useEffect(() => {
         (async () => {
@@ -146,7 +162,6 @@ export default function HomeScreen() {
         setTempCategory(''); // Reset the temporary category
     };
 
-
     const handleMapPress = (event) => {
         if (!user) {
             Alert.alert('You must be logged in to place pins.');
@@ -179,7 +194,6 @@ export default function HomeScreen() {
             setLoading(false);
         }
     };
-
 
     const savePinToFirestore = async (pin) => {
         try {
@@ -229,6 +243,7 @@ export default function HomeScreen() {
             console.error('Error updating pin:', error);
         }
     };
+
     const deletePinFromFirestore = async (pinId) => {
         try {
             const pinRef = doc(db, 'pins', pinId);
@@ -255,7 +270,7 @@ export default function HomeScreen() {
         const commentData = {
             text: newComment,
             userId: user.uid,
-            username: user.email,
+            username: user.username,
             pinId: pinId,
             timestamp: new Date(),
         };
@@ -299,8 +314,6 @@ export default function HomeScreen() {
         }
     };
 
-    const options = ['userPins', 'Food', 'Fitness', 'Bars', 'Fun', 'NotFun', 'Other'];
-
     const handlePress = (option) => {
         setSelectedCategories(prev => {
             const newCategories = new Set(prev);
@@ -320,6 +333,11 @@ export default function HomeScreen() {
             }
             return newCategories;
         });
+    };
+
+    const onRegionChangeComplete = (region) => {
+        const zoom = Math.round(Math.log(360 / region.latitudeDelta) / Math.LN2);
+        setZoomLevel(zoom);
     };
 
 
@@ -364,6 +382,7 @@ export default function HomeScreen() {
                 showsCompass={false}
                 region={Grimstad}
                 initialRegion={Grimstad}
+                onRegionChangeComplete={onRegionChangeComplete}
                 customMapStyle={mapStyle}
                 mapPadding={{top: 40, bottom: 0, left: 25, right: 25}}
             >
@@ -380,17 +399,24 @@ export default function HomeScreen() {
                                 coordinate={marker.coordinate}
                                 title={marker.title}
                                 pinColor={
-                                    user && user.uid === marker.userId
-                                        ? undefined
-                                        : categoryColors[marker.category] || '#7e7962'
+                                    zoomLevel <= 15 && (user && user.uid === marker.userId ? undefined : categoryColors[marker.category] || '#7e7962')
                                 }
                                 icon={
-                                    (user && user.uid === marker.userId ? require('../assets/USERpin.png')
-                                        : marker.userId ? require('../assets/otherUSERpin.png')
-                                            : undefined)
+                                    zoomLevel <= 15 && (
+                                        user && user.uid === marker.userId ? require('../assets/USERpin.png') :
+                                            marker.userId ? require('../assets/otherUSERpin.png') :
+                                                undefined
+                                    )
                                 }
                                 onCalloutPress={() => pinPress(marker.id)}
                             >
+                                <View style={{alignItems: 'baseline'}}>
+                                    {zoomLevel > 15 && (
+                                        <Text style={{color: 'white', fontSize: 13, backgroundColor: 'rgba(255,255,255,0.21)'}}>
+                                            {marker.title}
+                                        </Text>
+                                    )}
+                                </View>
                                 <Callout>
                                     <View>
                                         <Text>{marker.title}</Text>
@@ -401,6 +427,8 @@ export default function HomeScreen() {
                         ))
                 }
             </MapView>
+
+
 
 
             {loading && (

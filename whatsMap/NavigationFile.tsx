@@ -28,7 +28,7 @@ export function NavigationFile() {
                 <Stack.Screen name="MAP" component={HomeMap} options={{ headerShown:false }}/>
                 <Stack.Screen name="Login" component={Login} options={{ headerShown:false }}/>
                 <Stack.Screen name="Profile" component={Profile} options={{ headerShown:false }}/>
-                <Stack.Screen name="Register" component={Register} options={{ headerShown:false }}/>
+                <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
                 <Stack.Screen name="MyPins" component={MyPins} options={{ headerShown:false }}/>
             </Stack.Navigator>
         </NavigationContainer>
