@@ -1,16 +1,21 @@
-import {StyleSheet, Dimensions} from "react-native";
+import {StyleSheet} from "react-native";
 
 const BG_COLOUR = "#30384B";
 export const FG_COLOUR = "#22ECBC";
 const RED_COLOUR = "#FF3232";
 
 const styles = StyleSheet.create({
+    root:
+        {
+            flex: 1,
+            backgroundColor: BG_COLOUR
+        },
     container:
         {
             flex: 1,
             justifyContent: 'center',
-            alignItems: 'center',
             backgroundColor: BG_COLOUR,
+            paddingHorizontal: 40,
         },
     body:
         {
@@ -24,11 +29,19 @@ const styles = StyleSheet.create({
             fontSize: 16,
             textAlign: "left",
         },
+    text_input_container:
+        {
+            alignItems: 'center',
+            backgroundColor: BG_COLOUR,
+            flexDirection: 'row',
+            height: 48,
+            paddingHorizontal: 16,
+        },
     header:
         {
             color: FG_COLOUR,
-            marginTop: 10,
-            marginBottom: 40,
+            marginTop: 70,
+            marginBottom: 20,
             fontSize: 50,
             fontWeight: "bold",
             textAlign: "center",
@@ -52,22 +65,22 @@ const styles = StyleSheet.create({
     line:
         {
             flex: 1,
-            height: 1,
+            height: 2,
             backgroundColor: FG_COLOUR,
-        },
-    lineContainer:
-        {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
         },
-    text_input_container:
+    line_input:
         {
-            alignItems: 'center',
-            backgroundColor: BG_COLOUR,
+            flex: 1,
+            height: 1,
+            backgroundColor: FG_COLOUR,
             flexDirection: 'row',
-            height: 48,
-            paddingHorizontal: 16,
+            alignItems: 'center',
+            justifyContent: 'center',
+            maxWidth: 275,
+            marginStart: 15
         },
 });
 

@@ -1,43 +1,27 @@
 import {
-    Button,
     KeyboardAvoidingView, Platform,
     Pressable,
     SafeAreaView,
     Text,
     TextInput,
-    TextInputComponent, TouchableOpacity,
+    TouchableOpacity,
     View,
-    KeyboardAvoidingViewProps, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent,
     ScrollView,
     Alert
 } from "react-native";
 import loginStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
-import {app} from "../firebaseConfig";
 import {
     getAuth,
     signInWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged
 } from 'firebase/auth';
-import React, {useState, useEffect} from 'react';
-import {auth} from "./HomeMap";
-import firebase from "firebase/compat";
-import User = firebase.User;
-
-
-
-
+import React, {useState} from 'react';
+import styles, {FG_COLOUR} from "../Styles/styles"
 
 export default function Login({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [userInfo, setUserInfo] = useState('');
-    const [user, setUser] = useState(null);
-    const provider = new GoogleAuthProvider();
-    const styles = loginStyle
+    const oldStyle = loginStyle
     const login = async () => {
         try {
             const auth = getAuth();
@@ -63,110 +47,84 @@ export default function Login({navigation}) {
         }
     };
 
-
-
-    const handleSignIn = async () => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            setUser(user);
-        } catch (error) {
-            console.error('Google sign-in error:', error);
-        }
-    };
-
     return (
         <ScrollView style={styles.root}>
-            <SafeAreaView style={styles.safeAreaView}>
-                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
-                    <Text style={styles.title}>Login</Text>
-                    <SizedBox height={100}/>
+            <SafeAreaView style={styles.container}>
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                    <Text style={styles.header}>Login</Text>
 
-                    <View>
-                        <Button title="Sign In with Google" onPress={handleSignIn} />
-                    </View>
+                    <View style={styles.line}></View>
 
-                    <SizedBox height={50}/>
-
-                    <View style={styles.lineContainer}>
-                        <View style={styles.line}/>
-                        <Text style={styles.text}>x</Text>
-                        <View style={styles.line}/>
-                    </View>
-
-                    <SizedBox height={50}/>
+                    <SizedBox height={75}/>
 
                     <Pressable>
-                        <View style={styles.form}>
-                            <Text style={styles.label}>Email</Text>
+                        <View style={styles.text_input_container}>
                             <KeyboardAvoidingView
                                 style={{flex: 1}}
                                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                             >
                                 <TextInput
+                                    placeholder="Email"
+                                    placeholderTextColor={FG_COLOUR}
                                     autoCapitalize="none"
-                                    // autoCompleteType="email"
                                     autoCorrect={false}
                                     keyboardType="email-address"
                                     returnKeyType="next"
-                                    style={styles.textInput}
+                                    style={styles.text_input}
                                     textContentType="username"
                                     value={email}
                                     onChangeText={(text) => setEmail(text)}
                                 />
                             </KeyboardAvoidingView>
-
                         </View>
                     </Pressable>
-
+                    <View style={styles.line_input}></View>
 
                     <SizedBox height={16}/>
 
                     <Pressable>
-                        <View style={styles.form}>
-                            <Text style={styles.label}>Password</Text>
+                        <View style={styles.text_input_container}>
                             <KeyboardAvoidingView
                                 style={{flex: 1}}
                                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 
                                 <TextInput
+                                    placeholder="Password"
+                                    placeholderTextColor={FG_COLOUR}
                                     autoCapitalize="none"
-                                    //autoCompleteType="password"
                                     autoCorrect={false}
                                     returnKeyType="done"
                                     secureTextEntry
-                                    style={styles.textInput}
+                                    style={oldStyle.textInput}
                                     textContentType="password"
                                     value={password}
                                     onChangeText={(text) => setPassword(text)}
                                 />
                             </KeyboardAvoidingView>
-
                         </View>
                     </Pressable>
-                    <SizedBox height={16}/>
+                    <View style={styles.line_input}></View>
 
-                    <SizedBox height={16}/>
+                    <SizedBox height={50}/>
 
                     <TouchableOpacity onPress={login}>
                         <View style={styles.button}>
-                            <Text style={styles.buttonTitle}>Login</Text>
+                            <Text style={styles.button_text}>Login</Text>
                         </View>
                     </TouchableOpacity>
+
                     <SizedBox height={20}/>
 
                     <TouchableOpacity onPress={() => navigation.navigate('Register')} >
                         <View style={styles.button}>
-                            <Text style={styles.buttonTitle}>
+                            <Text style={styles.button_text}>
                                 Register
                             </Text>
                         </View>
                     </TouchableOpacity>
 
-
                 </KeyboardAvoidingView>
             </SafeAreaView>
         </ScrollView>
     );
-
 };
