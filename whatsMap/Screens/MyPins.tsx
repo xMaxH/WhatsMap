@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { db } from "../firebaseConfig";
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot  } from 'firebase/firestore';
 import { pinModal, style1 } from "../Styles/style1";
 import { auth } from "./HomeMap";  // Ensure this is the correct path to your auth setup
 import { onAuthStateChanged } from 'firebase/auth';
@@ -31,14 +31,16 @@ export default function MyPinsScreen() {
             try {
                 const pinsCollectionRef = collection(db, 'pins');
                 const q = query(pinsCollectionRef, where("userId", "==", user.uid));
-                const querySnapshot = await getDocs(q);
-                const loadedPins = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
+                // Listen for real-time updates to the pins collection
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const loadedPins = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }));
+                    setPins(loadedPins);
+                    setLoading(false);
+                });
 
-                setPins(loadedPins);
-                setLoading(false);
             } catch (error) {
                 console.error('Error loading pins:', error);
                 setLoading(false);

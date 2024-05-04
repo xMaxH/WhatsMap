@@ -98,7 +98,6 @@ const style1 = StyleSheet.create({
         paddingHorizontal: 0,
         marginVertical:-10,
         height: 50, // Adjust height to ensure it's enough to show text
-        maxHeight:320
     },
     chooseCategory: {
         flexDirection: 'row',
@@ -113,6 +112,14 @@ const style1 = StyleSheet.create({
         right: 0,
         zIndex: 1000,
     },
+    commentbtn: {
+        flexDirection: 'row',
+    },
+
+    submitcomment: {
+        width: 80,
+        height: 90
+    }
 
 });
 
@@ -174,7 +181,7 @@ const pinModal = StyleSheet.create(
             margin: 12,
             borderWidth: 1,
             padding: 10,
-            width: 250,
+            width: 200,
             backgroundColor: 'white',
         },
 

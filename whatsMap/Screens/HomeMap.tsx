@@ -26,6 +26,7 @@ import { AntDesign } from '@expo/vector-icons';
 import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot} from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
+//import { ScrollView } from 'react-native-virtualized-view'
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
@@ -528,25 +529,31 @@ export default function HomeScreen() {
                             <View style={pinModal.modalView}>
                                 <Text style={pinModal.titletext}>{viewingPin?.title || "No Title"}</Text>
                                 <Text style={pinModal.subtitletext}>{viewingPin?.description || "No Description"}</Text>
-                                <TextInput
-                                    style={pinModal.input}
-                                    placeholder="Add a comment..."
-                                    value={newComment}
-                                    onChangeText={setNewComment}
-                                    maxLength={300}
-                                />
-                                <Button
-                                    title="Submit Comment"
-                                    onPress={() => {
-                                        if (user) {
-                                            handleAddComment(viewingPin.id);
-                                        } else {
-                                            Alert.alert("Please log in to add comments");
-                                        }
-                                    }}
-                                />
-                                <ScrollView>
+                               <View style={style1.commentbtn}>
+                                   <TextInput
+                                       style={pinModal.input}
+                                       placeholder="Add a comment..."
+                                       value={newComment}
+                                       onChangeText={setNewComment}
+                                       maxLength={300}
+                                   />
+                                  <View style={style1.submitcomment}>
+                                      <Button
+                                          title="Post"
+                                          onPress={() => {
+                                              if (user) {
+                                                  handleAddComment(viewingPin.id);
+                                              } else {
+                                                  Alert.alert("Please log in to add comments");
+                                              }
+                                          }}
+                                      />
+                                  </View>
+                               </View>
+                                <View style={{maxHeight: 200, width: "80%"}}>
                                     <FlatList
+                                        nestedScrollEnabled={true}
+                                        showsHorizontalScrollIndicator={true}
                                         data={comments}
                                         keyExtractor={(item) => item.id}
                                         renderItem={({item}) => (
@@ -581,9 +588,10 @@ export default function HomeScreen() {
                                         )}
                                         ListEmptyComponent={<Text>No comments yet</Text>}
                                     />
-                                </ScrollView>
+                                </View>
                                 <Button
                                     title="Close"
+                                    color="red"
                                     onPress={() => setViewPinModalVisible(false)}
                                 />
 
