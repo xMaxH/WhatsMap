@@ -47,16 +47,16 @@ export default function Login({navigation}) {
         } catch (error) {
             if (error.code === 'auth/user-not-found') {
                 // User does not exist, show alert
-                Alert.alert(
+                /*Alert.alert(
                     'User Not Found',
-                    'You must register a user before logging in.',
+                    'Either register a user or check your credentials.',
                     [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
-                );
+                );*/
             } else {
                 // Other errors, show the error message
                 Alert.alert(
                     'Login Error',
-                    'You must register a user before logging in.',
+                    'Either register a user or check your credentials.',
                     [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
                 );
             }
@@ -64,27 +64,12 @@ export default function Login({navigation}) {
     };
 
 
-
-    const handleSignIn = async () => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            setUser(user);
-        } catch (error) {
-            console.error('Google sign-in error:', error);
-        }
-    };
-
     return (
         <ScrollView style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
                     <Text style={styles.title}>Login</Text>
                     <SizedBox height={100}/>
-
-                    <View>
-                        <Button title="Sign In with Google" onPress={handleSignIn} />
-                    </View>
 
                     <SizedBox height={50}/>
 
