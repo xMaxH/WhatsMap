@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Text, TouchableOpacity, View, Alert} from 'react-native';
 import {getAuth, onAuthStateChanged, signOut, deleteUser,reauthenticateWithCredential  } from 'firebase/auth';
-import {style1} from '../Styles/style1';
+import styles from "../Styles/styles";
 // @ts-ignore
 import {auth} from "./HomeMap"
+import SizedBox from "../Styles/SizedBox";
 
 const Profile = ({navigation}) => {
     const [user, setUser] = useState(null);
@@ -109,19 +110,20 @@ const Profile = ({navigation}) => {
 
      */
     return (
-        <View style={style1.container}>
+        <View style={styles.container}>
             {user ? ( // Displays user info
                 <View>
-                    <Text style={style1.text1}>Welcome, {user.email}</Text>
-                    <TouchableOpacity onPress={handleLogout} style={style1.Logoutbtn}>
-                        <Text style={style1.text2}>Logout</Text>
+                    <Text style={styles.header2}>Welcome, {user.email}</Text>
+                    <SizedBox height={20}/>
+                    <TouchableOpacity onPress={handleLogout} style={styles.button}>
+                        <Text style={styles.button_text}>Logout</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleDeleteAccount} style={style1.Deleteaccountbtn}>
-                        <Text style={style1.text2}>Delete Account</Text>
+                    <TouchableOpacity onPress={handleDeleteAccount} style={styles.button_delete}>
+                        <Text style={styles.button_text}>Delete Account</Text>
                     </TouchableOpacity>
                 </View>
             ) : (
-                <Text style={style1.text1}>Not signed in</Text>
+                <Text style={styles.body}>Not signed in</Text>
             )}
         </View>
 
