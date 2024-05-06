@@ -69,24 +69,36 @@ export default function HomeScreen() {
     const options = ['userPins', 'Food', 'Fitness', 'Bars', 'Fun', 'NotFun', 'Other'];
     const [zoomLevel, setZoomLevel] = useState(10); // Default zoom level
 
-
     useEffect(() => {
-        return onAuthStateChanged(auth, async (currentUser) => {
+        let unsubscribeDoc;
+
+        const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 const userDocRef = doc(db, 'users', currentUser.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    setUser({ ...currentUser, ...userData });
-                } else {
-                    setUser({ ...currentUser, username: 'Anonymous' }); // Default if not set
-                }
+                unsubscribeDoc = onSnapshot(userDocRef, (doc) => {
+                    if (doc.exists()) {
+                        const userData = doc.data();
+                        setUser({ ...currentUser, ...userData });
+                    } else {
+                        setUser({ ...currentUser, username: 'Anonymous' });
+                    }
+                });
             } else {
                 setUser(null);
+
+                if (unsubscribeDoc) {
+                    unsubscribeDoc();
+                }
             }
         });
-    }, []);
 
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeDoc) {
+                unsubscribeDoc();
+            }
+        };
+    }, []);
 
 
 
@@ -160,7 +172,7 @@ export default function HomeScreen() {
         setEditingMarker(null);
         setTempTitle('');
         setTempDescription('');
-        setTempCategory(''); // Reset the temporary category
+        setTempCategory('');
     };
 
     const handleMapPress = (event) => {
@@ -186,7 +198,7 @@ export default function HomeScreen() {
                 coordinate: newPinCoordinates,
                 title: tempTitle,
                 description: tempDescription,
-                category: category, // Make sure this is saved
+                category: category,
                 userId: user.uid,
             };
             const savedPinWithUserId = await savePinToFirestore(newMarker);
@@ -263,29 +275,37 @@ export default function HomeScreen() {
     };
 
     const handleAddComment = async (pinId) => {
-        console.log("Current user object:", user);  // Log the current user object
         if (!newComment.trim()) {
             Alert.alert("Error", "Comment cannot be empty.");
-            return;  // Prevent empty comments
+            return;
         }
+        if (loading) return;
+
+        setLoading(true);
 
         const commentData = {
             text: newComment,
             userId: user.uid,
-            username: user.username || 'Anonymous',  // Ensure fallback to 'Anonymous'
+            username: user.username,
             pinId: pinId,
             timestamp: new Date(),
         };
+
         try {
             const pinCommentsRef = collection(db, 'comments');
             await addDoc(pinCommentsRef, commentData);
-            setNewComment('');  // Clear the comment input after submission
+            setNewComment('');
             Alert.alert('Success', 'Comment added successfully');
         } catch (error) {
             console.error('Error adding comment:', error);
             Alert.alert('Error', 'Failed to add comment');
+        } finally {
+            setLoading(false);
         }
     };
+
+
+
 
 
     const fetchComments = async (pinId) => {
@@ -324,7 +344,7 @@ export default function HomeScreen() {
                 if (newCategories.has(option)) {
                     newCategories.delete(option);
                 } else {
-                    newCategories.clear(); // Clear other categories if 'userPins' is selected
+                    newCategories.clear();
                     newCategories.add(option);
                 }
             } else {
@@ -587,6 +607,7 @@ export default function HomeScreen() {
                                 />
                                 <Button
                                     title="Submit Comment"
+                                    disabled={loading}
                                     onPress={() => {
                                         if (user) {
                                             handleAddComment(viewingPin.id);

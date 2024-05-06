@@ -99,7 +99,7 @@ export default function Register({ navigation }) {
                     visible={showUsernameModal}
                     setVisible={setShowUsernameModal}
                     userId={userId}
-                    onUpdateUsername={onUpdateUsername} // Pass the function as a prop
+                    onUpdateUsername={onUpdateUsername}
                     navigation={navigation}
                 />
             )}
