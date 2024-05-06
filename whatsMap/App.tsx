@@ -55,14 +55,16 @@ export default function App() {
                             }}
                 />
             )}
-            <Tab.Screen name="Explore" component={Drawer}
-                        options={{
-                            tabBarLabel: 'Explore',
-                            tabBarIcon: () => (
-                                <Icon name="monitor-screenshot" size={25} />
-                            )
-                        }}
-            />
+            {user && (
+                <Tab.Screen name="My pins" component={MyPins}
+                            options={{
+                                tabBarLabel: 'My pins',
+                                tabBarIcon: () => (
+                                    <Icon name="pin" size={25} />
+                                )
+                            }}
+                />
+            )}
         </Tab.Navigator>
     );
 
