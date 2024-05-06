@@ -27,6 +27,10 @@ export default function UsernameModal({ visible, setVisible, userId, navigation,
         }
     };
 
+
+
+
+
     return (
         <Modal
             visible={visible}
