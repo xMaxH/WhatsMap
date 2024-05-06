@@ -13,7 +13,7 @@ const Profile = ({ navigation }) => {
     const [showUsernameModal, setShowUsernameModal] = useState(false);
 
     useEffect(() => {
-        return onAuthStateChanged(auth, async (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 const userDocRef = doc(db, 'users', currentUser.uid);
                 const userDocSnap = await getDoc(userDocRef);
@@ -27,7 +27,16 @@ const Profile = ({ navigation }) => {
                 setUser(null);
             }
         });
+        return unsubscribe;
     }, []);
+
+    const handleUpdateUsername = (newUsername) => {
+        setUser((currentUser) => ({
+            ...currentUser,
+            username: newUsername
+        }));
+    };
+
 
     const handleLogout = async () => {
         try {
@@ -42,7 +51,7 @@ const Profile = ({ navigation }) => {
         <View style={style1.container}>
             {user ? (
                 <View>
-                    <Text style={style1.text1}>Welcome, {user.username || user.email}</Text>
+                    <Text style={style1.text1}>Welcome, {user.username || user.username}</Text>
                     <TouchableOpacity onPress={() => setShowUsernameModal(true)}>
                         <Text>Update Username</Text>
                     </TouchableOpacity>
@@ -55,6 +64,7 @@ const Profile = ({ navigation }) => {
                             visible={showUsernameModal}
                             setVisible={setShowUsernameModal}
                             userId={user.uid}
+                            onUpdateUsername={handleUpdateUsername} // Passing the update function
                             navigation={navigation}
                         />
                     )}
