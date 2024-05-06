@@ -24,7 +24,7 @@ function authStyles() {
         },
         button: {
             alignItems: 'center',
-            backgroundColor: '#4882C5',
+            backgroundColor: '#FFFFFF',
             borderRadius: 8,
             height: 48,
             justifyContent: 'center',
@@ -106,29 +106,7 @@ function authStyles() {
         },
         text: {
             paddingHorizontal: 10,
-        }, container: {
-            flex: 1,
-            paddingTop: 50
         },
-        inner: {
-            padding: 24,
-            flex: 1,
-            justifyContent: "space-around"
-        },
-
-        input: {
-            height: 40,
-            borderColor: '#000000',
-            borderBottomWidth: 1,
-            marginBottom: 36
-        },
-
-
-        buttonText: {
-            fontSize: 20,
-            color: '#000000',
-            textAlign: 'center'
-        }
     });
 }
 

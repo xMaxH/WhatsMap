@@ -11,7 +11,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     FlatList,
-    ScrollView,
+    ScrollView
 } from 'react-native';
 
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -23,7 +23,7 @@ import {initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence} 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {app, db} from "../firebaseConfig";
 import {AntDesign} from '@expo/vector-icons';
-import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs,getDoc, query, where, onSnapshot} from 'firebase/firestore';
+import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot} from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
 //import { ScrollView } from 'react-native-virtualized-view'
@@ -67,41 +67,12 @@ export default function HomeScreen() {
         NotFun: '#FFD700',
         Other: '#40E0D0'
     };
-    const options = ['userPins', 'Food', 'Fitness', 'Bars', 'Fun', 'NotFun', 'Other'];
-    const [zoomLevel, setZoomLevel] = useState(10); // Default zoom level
 
     useEffect(() => {
-        let unsubscribeDoc;
-
-        const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-            if (currentUser) {
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                unsubscribeDoc = onSnapshot(userDocRef, (doc) => {
-                    if (doc.exists()) {
-                        const userData = doc.data();
-                        setUser({ ...currentUser, ...userData });
-                    } else {
-                        setUser({ ...currentUser, username: 'Anonymous' });
-                    }
-                });
-            } else {
-                setUser(null);
-
-                if (unsubscribeDoc) {
-                    unsubscribeDoc();
-                }
-            }
+        return onAuthStateChanged(auth, currentUser => {
+            setUser(currentUser);
         });
-
-        return () => {
-            unsubscribeAuth();
-            if (unsubscribeDoc) {
-                unsubscribeDoc();
-            }
-        };
     }, []);
-
-
 
     useEffect(() => {
         (async () => {
@@ -173,8 +144,9 @@ export default function HomeScreen() {
         setEditingMarker(null);
         setTempTitle('');
         setTempDescription('');
-        setTempCategory('');
+        setTempCategory(''); // Reset the temporary category
     };
+
 
     const handleMapPress = (event) => {
         if (!user) {
@@ -199,7 +171,7 @@ export default function HomeScreen() {
                 coordinate: newPinCoordinates,
                 title: tempTitle,
                 description: tempDescription,
-                category: category,
+                category: category, // Make sure this is saved
                 userId: user.uid,
             };
             const savedPinWithUserId = await savePinToFirestore(newMarker);
@@ -208,6 +180,7 @@ export default function HomeScreen() {
             setLoading(false);
         }
     };
+
 
     const savePinToFirestore = async (pin) => {
         try {
@@ -257,7 +230,6 @@ export default function HomeScreen() {
             console.error('Error updating pin:', error);
         }
     };
-
     const deletePinFromFirestore = async (pinId) => {
         try {
             const pinRef = doc(db, 'pins', pinId);
@@ -278,36 +250,26 @@ export default function HomeScreen() {
     const handleAddComment = async (pinId) => {
         if (!newComment.trim()) {
             Alert.alert("Error", "Comment cannot be empty.");
-            return;
+            return;  // Prevent empty comments
         }
-        if (loading) return;
-
-        setLoading(true);
 
         const commentData = {
             text: newComment,
             userId: user.uid,
-            username: user.username,
+            username: user.email,
             pinId: pinId,
             timestamp: new Date(),
         };
-
         try {
             const pinCommentsRef = collection(db, 'comments');
             await addDoc(pinCommentsRef, commentData);
-            setNewComment('');
+            setNewComment('');  // Clear the comment input after submission
             Alert.alert('Success', 'Comment added successfully');
         } catch (error) {
             console.error('Error adding comment:', error);
             Alert.alert('Error', 'Failed to add comment');
-        } finally {
-            setLoading(false);
         }
     };
-
-
-
-
 
     const fetchComments = async (pinId) => {
         try {
@@ -338,6 +300,8 @@ export default function HomeScreen() {
         }
     };
 
+    const options = ['userPins', 'Food', 'Fitness', 'Bars', 'Fun', 'NotFun', 'Other'];
+
     const handlePress = (option) => {
         setSelectedCategories(prev => {
             const newCategories = new Set(prev);
@@ -345,7 +309,7 @@ export default function HomeScreen() {
                 if (newCategories.has(option)) {
                     newCategories.delete(option);
                 } else {
-                    newCategories.clear();
+                    newCategories.clear(); // Clear other categories if 'userPins' is selected
                     newCategories.add(option);
                 }
             } else {
@@ -357,11 +321,6 @@ export default function HomeScreen() {
             }
             return newCategories;
         });
-    };
-
-    const onRegionChangeComplete = (region) => {
-        const zoom = Math.round(Math.log(360 / region.latitudeDelta) / Math.LN2);
-        setZoomLevel(zoom);
     };
 
 
@@ -406,7 +365,6 @@ export default function HomeScreen() {
                 showsCompass={false}
                 region={Grimstad}
                 initialRegion={Grimstad}
-                onRegionChangeComplete={onRegionChangeComplete}
                 customMapStyle={mapStyle}
                 mapPadding={{top: 40, bottom: 0, left: 25, right: 25}}
             >
@@ -423,24 +381,17 @@ export default function HomeScreen() {
                                 coordinate={marker.coordinate}
                                 title={marker.title}
                                 pinColor={
-                                    zoomLevel <= 15 && (user && user.uid === marker.userId ? undefined : categoryColors[marker.category] || '#7e7962')
+                                    user && user.uid === marker.userId
+                                        ? undefined
+                                        : categoryColors[marker.category] || '#7e7962'
                                 }
                                 icon={
-                                    zoomLevel <= 15 && (
-                                        user && user.uid === marker.userId ? require('../assets/USERpin.png') :
-                                            marker.userId ? require('../assets/otherUSERpin.png') :
-                                                undefined
-                                    )
+                                    (user && user.uid === marker.userId ? require('../assets/USERpin.png')
+                                        : marker.userId ? require('../assets/otherUSERpin.png')
+                                            : undefined)
                                 }
                                 onCalloutPress={() => pinPress(marker.id)}
                             >
-                                <View style={{alignItems: 'baseline'}}>
-                                    {zoomLevel > 15 && (
-                                        <Text style={{color: 'white', fontSize: 13, backgroundColor: 'rgba(255,255,255,0.21)'}}>
-                                            {marker.title}
-                                        </Text>
-                                    )}
-                                </View>
                                 <Callout>
                                     <View>
                                         <Text>{marker.title}</Text>
@@ -451,8 +402,6 @@ export default function HomeScreen() {
                         ))
                 }
             </MapView>
-
-
 
 
             {loading && (
@@ -599,6 +548,14 @@ export default function HomeScreen() {
                             <View style={pinModal.modalView}>
                                 <Text style={pinModal.titletext}>{viewingPin?.title || "No Title"}</Text>
                                 <Text style={pinModal.subtitletext}>{viewingPin?.description || "No Description"}</Text>
+                               <View style={style1.commentbtn}>
+                                   <TextInput
+                                       style={pinModal.input}
+                                       placeholder="Add a comment..."
+                                       value={newComment}
+                                       onChangeText={setNewComment}
+                                       maxLength={300}
+                                   />
                                   <View style={style1.submitcomment}>
                                       <Button
                                           title="Post"
