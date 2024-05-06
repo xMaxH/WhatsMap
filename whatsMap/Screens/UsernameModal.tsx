@@ -2,14 +2,10 @@ import React, { useState } from 'react';
 import {View, Text, TextInput, Button, Alert, Modal, TouchableOpacity} from 'react-native';
 import { app } from "../firebaseConfig";
 import { doc, setDoc, getFirestore, collection } from "firebase/firestore";
+import { updateAllUserComments } from '../firebaseOperations';
 
-export default function UsernameModal({ visible, setVisible, userId, navigation }) {
+export default function UsernameModal({ visible, setVisible, userId, navigation, onUpdateUsername }) {
     const [username, setUsername] = useState('');
-
-
-
-
-
 
     const handleUsernameCreation = async () => {
         if (!username.trim()) {
@@ -19,19 +15,22 @@ export default function UsernameModal({ visible, setVisible, userId, navigation 
 
         try {
             const db = getFirestore(app);
-            const usersRef = collection(db, "users");
-            await setDoc(doc(usersRef, userId), { username: username });
+            const userDocRef = doc(db, "users", userId);
+            // Use setDoc with merge true to update or create the username without overwriting other fields
+            await setDoc(userDocRef, { username: username }, { merge: true });
 
-            // Close the modal
-            setVisible(false);
-
-            // Navigate to the main screen
+            setVisible(false); // Close the modal
+            onUpdateUsername(username); // Notify parent component about the update
             navigation.navigate('Main', { username: username });
         } catch (error) {
             console.error("Error creating username:", error);
             Alert.alert('Error', 'Failed to create username');
         }
     };
+
+
+
+
 
     return (
         <Modal

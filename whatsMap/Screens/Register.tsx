@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Modal } from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { app } from "../firebaseConfig";
+import {app, db} from "../firebaseConfig";
 import signUpStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
 import UsernameModal from "./UsernameModal";
+import {doc, getDoc} from "firebase/firestore";
+import {auth} from "./HomeMap";
 
 export default function Register({ navigation }) {
     const styles = signUpStyle;
@@ -16,6 +18,20 @@ export default function Register({ navigation }) {
 
     const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isValidPassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~"£¤/=¨`'-_|§€]).{8,}$/.test(password);
+
+    const onUpdateUsername = (newUsername) => {
+        console.log("New username set:", newUsername);
+        // Perform any other actions you might need after username update
+    };
+    const refreshUserData = async (uid) => {
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            setUserId({ ...auth.currentUser, ...userData });  // Combine auth data and user data
+        }
+    };
+
 
     const handleRegister = async () => {
         if (!isValidEmail(email)) {
@@ -36,7 +52,7 @@ export default function Register({ navigation }) {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             setUserId(user.uid); // Store the user ID
-
+            await refreshUserData(user.uid);
             // Show the username modal
             setShowUsernameModal(true);
         } catch (error) {
@@ -83,9 +99,11 @@ export default function Register({ navigation }) {
                     visible={showUsernameModal}
                     setVisible={setShowUsernameModal}
                     userId={userId}
+                    onUpdateUsername={onUpdateUsername} // Pass the function as a prop
                     navigation={navigation}
                 />
             )}
+
         </ScrollView>
     );
 }

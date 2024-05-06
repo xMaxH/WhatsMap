@@ -77,15 +77,16 @@ export default function HomeScreen() {
                 const userDocSnap = await getDoc(userDocRef);
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
-                    setUser({ ...currentUser, username: userData.username });
+                    setUser({ ...currentUser, ...userData });
                 } else {
-                    setUser({ ...currentUser, username: '' }); // Handle case where user data doesn't exist
+                    setUser({ ...currentUser, username: 'Anonymous' }); // Default if not set
                 }
             } else {
                 setUser(null);
             }
         });
     }, []);
+
 
 
 
@@ -262,6 +263,7 @@ export default function HomeScreen() {
     };
 
     const handleAddComment = async (pinId) => {
+        console.log("Current user object:", user);  // Log the current user object
         if (!newComment.trim()) {
             Alert.alert("Error", "Comment cannot be empty.");
             return;  // Prevent empty comments
@@ -270,7 +272,7 @@ export default function HomeScreen() {
         const commentData = {
             text: newComment,
             userId: user.uid,
-            username: user.username,
+            username: user.username || 'Anonymous',  // Ensure fallback to 'Anonymous'
             pinId: pinId,
             timestamp: new Date(),
         };
@@ -284,6 +286,7 @@ export default function HomeScreen() {
             Alert.alert('Error', 'Failed to add comment');
         }
     };
+
 
     const fetchComments = async (pinId) => {
         try {
