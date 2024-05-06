@@ -10,6 +10,7 @@ import Profile from "./Screens/Profile";
 import Drawer from "./Screens/Drawer";
 import Register from "./Screens/Register";
 import MyPins from "./Screens/MyPins";
+import {FG_COLOUR} from "./Styles/styles";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -25,7 +26,14 @@ export default function App() {
     }, []);
 
     const MainTabScreen = () => (
-        <Tab.Navigator initialRouteName={'Home'}>
+        <Tab.Navigator initialRouteName={'Home'}
+                       screenOptions={()=> ({
+                           headerShown: false,
+                           tabBarStyle: {
+                               backgroundColor: FG_COLOUR,
+                           }
+                       })}
+        >
             {!user && (
                 <Tab.Screen name="Login" component={Login}
                             options={{
@@ -70,7 +78,9 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Navigator screenOptions={{ headerShown: false,
+                headerStyle: {backgroundColor: FG_COLOUR}
+            }}>
                 <Stack.Screen name="Main" component={MainTabScreen} />
                 <Stack.Screen name="Register" component={Register} options={{ headerShown: true}}/>
                 <Stack.Screen name="MyPins" component={MyPins} options={{ headerShown: true}}/>

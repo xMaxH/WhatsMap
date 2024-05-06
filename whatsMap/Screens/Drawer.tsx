@@ -1,11 +1,9 @@
-
 import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity} from "react-native";
-import loginStyle from "../Styles/authStyle";
+import styles from "../Styles/styles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {auth} from "./HomeMap";
 import {onAuthStateChanged} from "firebase/auth";
-
 
 export default function Drawer({navigation})
 {
@@ -16,30 +14,29 @@ export default function Drawer({navigation})
         onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
         }), []);
-    const styles = loginStyle
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: "rgba(48, 56, 75, 1)"}}>
+        <View style={styles.container}>
             <TouchableOpacity
                 onPress={() => navigation.navigate('Home')}
             >
-                <View style={styles.buttonDrawer}>
+                <View style={styles.button_drawer}>
                     <Icon name="home"
                           size={25}
-                          style={styles.iconButtonDrawer}
+                          style={styles.icon_drawer}
                     />
-                    <Text style={styles.textButtonDrawer}>Home Map</Text>
+                    <Text style={styles.button_text_drawer}>Home Map</Text>
                 </View>
             </TouchableOpacity>
             {!user && (
                 <TouchableOpacity
                 onPress={() => navigation.navigate('Login')}
             >
-                <View style={styles.buttonDrawer}>
+                <View style={styles.button_drawer}>
                     <Icon name="login"
                           size={25}
-                          style={styles.iconButtonDrawer}
+                          style={styles.icon_drawer}
                     />
-                    <Text style={styles.textButtonDrawer}>Login</Text>
+                    <Text style={styles.button_text_drawer}>Login</Text>
                 </View>
             </TouchableOpacity>)}
 
@@ -47,12 +44,12 @@ export default function Drawer({navigation})
             <TouchableOpacity
                 onPress={() => navigation.navigate('MyPins')}
             >
-                <View style={styles.buttonDrawer}>
+                <View style={styles.button_drawer}>
                     <Icon name="map-marker"
                           size={25}
-                          style={styles.iconButtonDrawer}
+                          style={styles.icon_drawer}
                     />
-                    <Text style={styles.textButtonDrawer}>My pins</Text>
+                    <Text style={styles.button_text_drawer}>My pins</Text>
                 </View>
             </TouchableOpacity>)}
 
@@ -60,36 +57,36 @@ export default function Drawer({navigation})
             <TouchableOpacity
                 onPress={() => navigation.navigate('Profile')}
             >
-                <View style={styles.buttonDrawer}>
+                <View style={styles.button_drawer}>
                     <Icon name="account"
                           size={25}
-                          style={styles.iconButtonDrawer}
+                          style={styles.icon_drawer}
                     />
-                    <Text style={styles.textButtonDrawer}>Profile</Text>
+                    <Text style={styles.button_text_drawer}>Profile</Text>
                 </View>
             </TouchableOpacity>)}
 
             <TouchableOpacity
                 onPress={() => navigation.navigate('Profile')}
             >
-                <View style={styles.buttonDrawer}>
+                <View style={styles.button_drawer}>
                     <Icon name="account"
                           size={25}
-                          style={styles.iconButtonDrawer}
+                          style={styles.icon_drawer}
                     />
-                    <Text style={styles.textButtonDrawer}>Discover</Text>
+                    <Text style={styles.button_text_drawer}>Discover</Text>
                 </View>
             </TouchableOpacity>
 
             <TouchableOpacity
                 onPress={() => navigation.navigate('About us')}
             >
-                <View style={styles.buttonDrawer}>
+                <View style={styles.button_drawer}>
                     <Icon name="information"
                           size={25}
-                          style={styles.iconButtonDrawer}
+                          style={styles.icon_drawer}
                     />
-                    <Text style={styles.textButtonDrawer}>About Us</Text>
+                    <Text style={styles.button_text_drawer}>About Us</Text>
                 </View>
             </TouchableOpacity>
         </View>

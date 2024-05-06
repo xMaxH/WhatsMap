@@ -9,7 +9,7 @@ import {
     View,
     ScrollView
 } from "react-native";
-import styles, {FG_COLOUR} from "../Styles/styles";
+import styles, {FG_COLOUR, FG_COLOUR_MUTED} from "../Styles/styles";
 import SizedBox from "../Styles/SizedBox";
 import React, { useState } from 'react';
 import { app } from "../firebaseConfig";
@@ -67,7 +67,7 @@ export default function Register({navigation}) {
                             >
                                 <TextInput
                                     placeholder={"Email"}
-                                    placeholderTextColor={FG_COLOUR}
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     autoCapitalize="none"
                                     autoCorrect={false}
                                     keyboardType="email-address"
@@ -91,7 +91,7 @@ export default function Register({navigation}) {
                             >
                                 <TextInput
                                     placeholder={"Password"}
-                                    placeholderTextColor={FG_COLOUR}
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     autoCapitalize="none"
                                     secureTextEntry
                                     autoCorrect={false}
@@ -118,7 +118,7 @@ export default function Register({navigation}) {
                             >
                                 <TextInput
                                     placeholder={"Confirm password"}
-                                    placeholderTextColor={FG_COLOUR}
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     autoCapitalize="none"
                                     autoCorrect={false}
                                     returnKeyType="done"

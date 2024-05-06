@@ -2,6 +2,7 @@ import {StyleSheet} from "react-native";
 
 const BG_COLOUR = "#30384B";
 export const FG_COLOUR = "#22ECBC";
+export const FG_COLOUR_MUTED = "#65a192";
 export const RED_COLOUR = "#FF3232";
 
 const styles = StyleSheet.create({
@@ -80,6 +81,29 @@ const styles = StyleSheet.create({
             fontWeight: "bold",
             textAlign: "center",
             lineHeight: 45,
+        },
+    button_drawer:
+        {
+            flexDirection: "row",
+            alignItems: 'center',
+            backgroundColor: BG_COLOUR,
+            borderRadius: 20,
+            height: 60,
+            width: 310,
+            marginBottom: 30,
+        },
+    button_text_drawer:
+        {
+            alignSelf: "center",
+            textAlign: "center",
+            fontSize: 30,
+            fontWeight: "bold"
+        },
+    icon_drawer:
+        {
+            left: 30,
+            marginRight: 50,
+            fontSize: 35
         },
     line:
         {

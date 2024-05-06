@@ -9,7 +9,7 @@ import {
     ScrollView,
     Alert
 } from "react-native";
-import styles, {FG_COLOUR} from "../Styles/styles";
+import styles, {FG_COLOUR, FG_COLOUR_MUTED} from "../Styles/styles";
 import SizedBox from "../Styles/SizedBox";
 import {
     getAuth,
@@ -49,6 +49,7 @@ export default function Login({navigation}) {
         <ScrollView style={styles.root}>
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                    <SizedBox height={75}/>
                     <Text style={styles.header}>Login</Text>
 
                     <View style={styles.line}></View>
@@ -63,7 +64,7 @@ export default function Login({navigation}) {
                             >
                                 <TextInput
                                     placeholder={"Email"}
-                                    placeholderTextColor={FG_COLOUR}
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     autoCapitalize="none"
                                     // autoCompleteType="email"
                                     autoCorrect={false}
@@ -89,7 +90,7 @@ export default function Login({navigation}) {
 
                                 <TextInput
                                     placeholder={"Password"}
-                                    placeholderTextColor={FG_COLOUR}
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     autoCapitalize="none"
                                     //autoCompleteType="password"
                                     autoCorrect={false}
@@ -112,7 +113,6 @@ export default function Login({navigation}) {
                             <Text style={styles.button_text}>Login</Text>
                         </View>
                     </TouchableOpacity>
-                    <SizedBox height={20}/>
 
                     <TouchableOpacity onPress={() => navigation.navigate('Register')} >
                         <View style={styles.button}>
