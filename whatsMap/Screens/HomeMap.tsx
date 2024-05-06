@@ -23,7 +23,18 @@ import {initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence} 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {app, db} from "../firebaseConfig";
 import {AntDesign} from '@expo/vector-icons';
-import {addDoc, updateDoc, doc, deleteDoc, collection, getDocs, query, where, onSnapshot} from 'firebase/firestore';
+import {
+    addDoc,
+    updateDoc,
+    doc,
+    deleteDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    onSnapshot,
+    getDoc
+} from 'firebase/firestore';
 import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
 //import { ScrollView } from 'react-native-virtualized-view'
@@ -250,16 +261,30 @@ export default function HomeScreen() {
     const handleAddComment = async (pinId) => {
         if (!newComment.trim()) {
             Alert.alert("Error", "Comment cannot be empty.");
-            return;  // Prevent empty comments
+            return;
         }
+
+        if (!user) {
+            Alert.alert("Error", "You must be logged in to add comments.");
+            return;
+        }
+
+        setLoading(true);
+
+        // Fetch the latest user information to ensure the username is up to date
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        const currentUsername = userSnap.exists() && userSnap.data().username ? userSnap.data().username : "Anonymous";  // Use "Anonymous" or any fallback if no username is set
 
         const commentData = {
             text: newComment,
             userId: user.uid,
-            username: user.email,
+            username: currentUsername, // Use the fetched username
             pinId: pinId,
             timestamp: new Date(),
         };
+
         try {
             const pinCommentsRef = collection(db, 'comments');
             await addDoc(pinCommentsRef, commentData);
@@ -268,8 +293,11 @@ export default function HomeScreen() {
         } catch (error) {
             console.error('Error adding comment:', error);
             Alert.alert('Error', 'Failed to add comment');
+        } finally {
+            setLoading(false);
         }
     };
+
 
     const fetchComments = async (pinId) => {
         try {

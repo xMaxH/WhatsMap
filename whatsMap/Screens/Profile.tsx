@@ -5,7 +5,7 @@ import { style1 } from '../Styles/style1';
 import UsernameModal from './UsernameModal'; // Ensure it's correctly imported
 import SizedBox from "../Styles/SizedBox";
 import {auth} from "./HomeMap";
-import {doc, getDoc} from "firebase/firestore";
+import {collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch} from "firebase/firestore";
 import {db} from "../firebaseConfig";
 
 const Profile = ({ navigation }) => {
@@ -30,12 +30,33 @@ const Profile = ({ navigation }) => {
         return unsubscribe;
     }, []);
 
-    const handleUpdateUsername = (newUsername) => {
-        setUser((currentUser) => ({
-            ...currentUser,
-            username: newUsername
-        }));
+    const handleUpdateUsername = async (newUsername) => {
+        const userRef = doc(db, 'users', user.uid);
+        try {
+            // Update the username in the user profile
+            await updateDoc(userRef, {
+                username: newUsername
+            });
+            // Update local state
+            setUser((currentUser) => ({
+                ...currentUser,
+                username: newUsername
+            }));
+            // Update all comments made by the user
+            const commentsRef = collection(db, 'comments');
+            const q = query(commentsRef, where("userId", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            querySnapshot.docs.forEach((doc) => {
+                batch.update(doc.ref, { username: newUsername });
+            });
+            await batch.commit();
+        } catch (error) {
+            console.error("Failed to update username:", error);
+        }
     };
+
+
 
     const handleLogout = async () => {
         try {

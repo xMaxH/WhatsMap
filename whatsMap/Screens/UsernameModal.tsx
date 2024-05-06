@@ -7,6 +7,7 @@ import { updateAllUserComments } from '../firebaseOperations';
 export default function UsernameModal({ visible, setVisible, userId, navigation, onUpdateUsername }) {
     const [username, setUsername] = useState('');
 
+    // In UsernameModal
     const handleUsernameCreation = async () => {
         if (!username.trim()) {
             Alert.alert("Error", "Username cannot be empty.");
@@ -19,13 +20,14 @@ export default function UsernameModal({ visible, setVisible, userId, navigation,
             await setDoc(userDocRef, { username: username }, { merge: true });
 
             setVisible(false); // Close the modal
-            onUpdateUsername(username);
+            onUpdateUsername(username); // Update username in HomeScreen state
             navigation.navigate('Main', { username: username });
         } catch (error) {
             console.error("Error creating username:", error);
             Alert.alert('Error', 'Failed to create username');
         }
     };
+
 
 
 
