@@ -1,147 +1,109 @@
-import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    ScrollView
-} from "react-native";
-import sinUpStyle from "../Styles/authStyle";
-import SizedBox from "../Styles/SizedBox";
 import React, { useState } from 'react';
-import { app } from "../firebaseConfig";
-import {getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Modal } from "react-native";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {app, db} from "../firebaseConfig";
+import signUpStyle from "../Styles/authStyle";
+import SizedBox from "../Styles/SizedBox";
+import UsernameModal from "./UsernameModal";
+import {doc, getDoc} from "firebase/firestore";
+import {auth} from "./HomeMap";
 
-export default function Register({navigation}) {
-
-    const styles = sinUpStyle
-
+export default function Register({ navigation }) {
+    const styles = signUpStyle;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordError] = useState('');
+    const [showUsernameModal, setShowUsernameModal] = useState(false);
+    const [userId, setUserId] = useState(null);
 
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isValidPassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~"£¤/=¨`'-_|§€]).{8,}$/.test(password);
 
-    const isValidPassword = (password) => {
-        // Regex that checks for minimum 8 characters, at least one uppercase letter, one number, and one special character
-        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~"£¤/=¨`'-_|§€]).{8,}$/;
-        return regex.test(password);
+    const onUpdateUsername = (newUsername) => {
+        console.log("New username set:", newUsername);
+        // Perform any other actions you might need after username update
+    };
+    const refreshUserData = async (uid) => {
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            setUserId({ ...auth.currentUser, ...userData });  // Combine auth data and user data
+        }
     };
 
 
-    // Function to handle user registration
     const handleRegister = async () => {
+        if (!isValidEmail(email)) {
+            Alert.alert('Invalid Email', 'Please enter a valid email address.');
+            return;
+        }
         if (password !== confirmPassword) {
-            alert('Passwords do not match.');
+            Alert.alert('Password Error', 'Passwords do not match.');
+            return;
+        }
+        if (!isValidPassword(password)) {
+            Alert.alert('Password Error', 'Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character.');
             return;
         }
 
-        /*if (!isValidPassword(password)) {
-            alert('Password must be at least 8 characters long, include at least one uppercase letter, one number, and one special character.');
-            return;
-        }*/
-
         try {
             const auth = getAuth(app);
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigation.navigate('Main');
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            setUserId(user.uid); // Store the user ID
+            await refreshUserData(user.uid);
+            // Show the username modal
+            setShowUsernameModal(true);
         } catch (error) {
-            alert('Registration failed. Please check your inputs and try again.');
+            console.error("Registration failed: ", error);
+            Alert.alert('Registration Failed', "Please check your inputs and try again.");
         }
     };
 
     return (
-        <ScrollView style={styles.root}>
-            <SafeAreaView style={styles.safeAreaView}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    style={styles.content}
-                >
-                    <Text style={styles.title}>Register New Account</Text>
+        <ScrollView style={styles.container}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.inner}>
+                <Text style={styles.title}>Register New Account</Text>
+                <SizedBox height={30}/>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    onChangeText={setEmail}
+                    value={email}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    secureTextEntry={true}
+                    onChangeText={setPassword}
+                    value={password}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    secureTextEntry={true}
+                    onChangeText={setConfirmPassword}
+                    value={confirmPassword}
+                />
+                <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                    <Text style={styles.buttonText}>Submit</Text>
+                </TouchableOpacity>
+            </KeyboardAvoidingView>
 
-                    <SizedBox height={0}/>
+            {/* Username Modal */}
+            {showUsernameModal && (
+                <UsernameModal
+                    visible={showUsernameModal}
+                    setVisible={setShowUsernameModal}
+                    userId={userId}
+                    onUpdateUsername={onUpdateUsername}
+                    navigation={navigation}
+                />
+            )}
 
-                    <SizedBox height={50}/>
-
-                    <View style={styles.lineContainer}>
-                        <View style={styles.line}/>
-                        <Text style={styles.text}>x</Text>
-                        <View style={styles.line}/>
-                    </View>
-
-                    <SizedBox height={50}/>
-                    <Pressable>
-                        <View style={styles.form}>
-                            <Text style={styles.label}>Email</Text>
-
-                            <TextInput
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                keyboardType="email-address"
-                                returnKeyType="next"
-                                style={styles.textInput}
-                                textContentType="username"
-                                onChangeText={(text) => setEmail(text)}
-                            />
-                        </View>
-                    </Pressable>
-
-                    <SizedBox height={16}/>
-
-                    <Pressable>
-                        <View style={styles.form}>
-                            <Text style={styles.label}>Password</Text>
-
-                            <TextInput
-                                autoCapitalize="none"
-                                secureTextEntry
-                                autoCorrect={false}
-                                returnKeyType="next"
-                                style={styles.textInput}
-                                textContentType="password"
-                                onChangeText={(text) => {
-                                    setPassword(text);
-                                }}
-                            />
-                            <Text style={styles.text}>{passwordError}</Text>
-                        </View>
-                    </Pressable>
-
-                    <SizedBox height={16}/>
-
-                    <Pressable>
-                        <View style={styles.form}>
-                            <Text style={styles.label}> Confirm Password</Text>
-
-                            <TextInput
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                returnKeyType="done"
-                                secureTextEntry
-                                style={styles.textInput}
-                                textContentType="password"
-                                onChangeText={(text) => setConfirmPassword(text)}
-                            />
-                        </View>
-                    </Pressable>
-
-                    <SizedBox height={16}/>
-
-
-
-                    <SizedBox height={16}/>
-
-                    <TouchableOpacity onPress={handleRegister}>
-                        <View style={styles.button}>
-                            <Text style={styles.buttonTitle}>Submit</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                </KeyboardAvoidingView>
-            </SafeAreaView>
         </ScrollView>
     );
 }
