@@ -56,6 +56,13 @@ const style1 = StyleSheet.create({
         height: 48,
         justifyContent: 'center',
     },
+    usernamebtn: {
+        alignItems: 'center',
+        backgroundColor: '#26790f',
+        borderRadius: 8,
+        height: 48,
+        justifyContent: 'center',
+    },
 
     Deleteaccountbtn: {
         alignItems: 'center',
