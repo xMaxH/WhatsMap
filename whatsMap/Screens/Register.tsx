@@ -5,7 +5,7 @@ import {app, db} from "../firebaseConfig";
 import signUpStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
 import UsernameModal from "./UsernameModal";
-import {doc, getDoc} from "firebase/firestore";
+import {doc, getDoc, setDoc} from "firebase/firestore";
 import {auth} from "./HomeMap";
 
 export default function Register({ navigation }) {
@@ -51,8 +51,9 @@ export default function Register({ navigation }) {
             const auth = getAuth(app);
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            setUserId(user.uid); // Store the user ID
-            await refreshUserData(user.uid);
+            const defaultUsername = email.split('@')[0];  // Simple transformation, consider making it more unique.
+            await setDoc(doc(db, "users", user.uid), { email, username: defaultUsername });
+
             // Show the username modal
             setShowUsernameModal(true);
         } catch (error) {

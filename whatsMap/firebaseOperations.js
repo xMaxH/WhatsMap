@@ -13,3 +13,4 @@ export const updateAllUserComments = async (userId, newUsername) => {
 
     await batch.commit();
 };
+
