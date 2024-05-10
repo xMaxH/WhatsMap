@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Text, TouchableOpacity, View, Alert, Pressable } from 'react-native';
-import { getAuth, onAuthStateChanged, signOut, deleteUser } from 'firebase/auth';
-import { style1 } from '../Styles/style1';
-import UsernameModal from './UsernameModal'; // Ensure it's correctly imported
+import React, {useEffect, useState} from 'react';
+import {Alert, Pressable, Text, TouchableOpacity, View} from 'react-native';
+import {deleteUser, getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
+import {style1} from '../Styles/style1';
+import UsernameModal from './UsernameModal';
 import SizedBox from "../Styles/SizedBox";
 import {auth} from "./HomeMap";
 import {collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch} from "firebase/firestore";
@@ -13,21 +13,20 @@ const Profile = ({ navigation }) => {
     const [showUsernameModal, setShowUsernameModal] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        return onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 const userDocRef = doc(db, 'users', currentUser.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
-                    setUser({ ...currentUser, username: userData.username });
+                    setUser({...currentUser, username: userData.username});
                 } else {
-                    setUser({ ...currentUser, username: '' }); // Handle case where user data doesn't exist
+                    setUser({...currentUser, username: ''}); // Handle case where user data doesn't exist
                 }
             } else {
                 setUser(null);
             }
         });
-        return unsubscribe;
     }, []);
 
     const handleUpdateUsername = async (newUsername) => {
@@ -57,7 +56,7 @@ const Profile = ({ navigation }) => {
     };
 
 
-
+// Function for handling when the user logs out
     const handleLogout = async () => {
         try {
             await signOut(getAuth());
@@ -66,7 +65,7 @@ const Profile = ({ navigation }) => {
             console.error("Logout failed", error);
         }
     };
-
+// Function for handling the deletion of an account
     const handleDeleteAccount = async () => {
         // Function to handle deletion confirmation
         const confirmDelete = () => {

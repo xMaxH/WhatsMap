@@ -1,43 +1,29 @@
 import {
-    Button,
-    KeyboardAvoidingView, Platform,
+    KeyboardAvoidingView,
+    Platform,
     Pressable,
     SafeAreaView,
     Text,
     TextInput,
-    TextInputComponent, TouchableOpacity,
+    TouchableOpacity,
     View,
-    KeyboardAvoidingViewProps, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent,
     ScrollView,
     Alert
 } from "react-native";
 import loginStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
-import {app} from "../firebaseConfig";
 import {
     getAuth,
     signInWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged
 } from 'firebase/auth';
-import React, {useState, useEffect} from 'react';
-import {auth} from "./HomeMap";
-import firebase from "firebase/compat";
-import User = firebase.User;
-
-
-
-
+import React, {useState} from 'react';
 
 export default function Login({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [userInfo, setUserInfo] = useState('');
-    const [user, setUser] = useState(null);
-    const provider = new GoogleAuthProvider();
     const styles = loginStyle
+
+    // Function that handles the login for users
     const login = async () => {
         try {
             const auth = getAuth();
@@ -46,14 +32,6 @@ export default function Login({navigation}) {
             navigation.navigate('Home');
         } catch (error) {
             if (error.code === 'auth/user-not-found') {
-                // User does not exist, show alert
-                /*Alert.alert(
-                    'User Not Found',
-                    'Either register a user or check your credentials.',
-                    [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
-                );*/
-            } else {
-                // Other errors, show the error message
                 Alert.alert(
                     'Login Error',
                     'Either register a user or check your credentials.',

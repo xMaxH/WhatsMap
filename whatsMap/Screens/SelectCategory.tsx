@@ -26,14 +26,14 @@ const SelectCategory: React.FC<SelectCategoryProps> = ({ setCategory, selectedCa
     ];
 
     useEffect(() => {
-        // Set the initial selected value based on the selectedCategory prop
+        // Sets the initial selected value based on the selectedCategory prop
         if (selectedCategory) {
             const initialOption = options.find(option => option.label === selectedCategory);
             if (initialOption) {
                 setSelectedValue(initialOption.value);
             }
         }
-    }, [selectedCategory]);  // Ensure it updates if selectedCategory changes
+    }, [selectedCategory]);  // Ensures it updates if selectedCategory changes
 
     const handleSelect = (value: string) => {
         setSelectedValue(value);

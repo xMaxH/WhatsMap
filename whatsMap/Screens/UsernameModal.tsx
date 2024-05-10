@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, Button, Alert, Modal, TouchableOpacity} from 'react-native';
+import {View, Text, TextInput, Button, Alert, Modal } from 'react-native';
 import { app } from "../firebaseConfig";
-import { doc, setDoc, getFirestore, collection } from "firebase/firestore";
-import { updateAllUserComments } from '../firebaseOperations';
+import { doc, setDoc, getFirestore } from "firebase/firestore";
 
 export default function UsernameModal({ visible, setVisible, userId, navigation, onUpdateUsername }) {
     const [username, setUsername] = useState('');
