@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { db } from "../firebaseConfig";
-import { collection, query, where, getDocs, onSnapshot  } from 'firebase/firestore';
+import { collection, query, where, onSnapshot  } from 'firebase/firestore';
 import { pinModal, style1 } from "../Styles/style1";
-import { auth } from "./HomeMap";  // Ensure this is the correct path to your auth setup
+import { auth } from "./HomeMap";
 import { onAuthStateChanged } from 'firebase/auth';
 
 export default function MyPinsScreen() {
@@ -12,6 +12,7 @@ export default function MyPinsScreen() {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
 
+    // Checks if user is logged in
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
@@ -20,6 +21,7 @@ export default function MyPinsScreen() {
         return () => unsubscribe();  // Clean up the subscription
     }, []);
 
+    // Fetches the users own pins if he is logged in
     useEffect(() => {
         const fetchMyPins = async () => {
             if (!user) {
@@ -32,7 +34,7 @@ export default function MyPinsScreen() {
                 const pinsCollectionRef = collection(db, 'pins');
                 const q = query(pinsCollectionRef, where("userId", "==", user.uid));
                 // Listen for real-time updates to the pins collection
-                const unsubscribe = onSnapshot(q, (snapshot) => {
+                onSnapshot(q, (snapshot) => {
                     const loadedPins = snapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data(),
