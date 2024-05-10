@@ -3,7 +3,6 @@ import {
     Alert,
     Button,
     Modal,
-    Pressable,
     Text,
     TextInput,
     TouchableWithoutFeedback,
@@ -19,7 +18,7 @@ import * as Location from 'expo-location';
 import {pinModal, style1} from "../Styles/style1";
 import {mapStyle} from "../Styles/mapstyle";
 // @ts-ignore
-import {initializeAuth, onAuthStateChanged, getAuth, getReactNativePersistence} from 'firebase/auth';
+import {initializeAuth, onAuthStateChanged, getReactNativePersistence} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {app, db} from "../firebaseConfig";
 import {AntDesign} from '@expo/vector-icons';
@@ -32,12 +31,9 @@ import {
     getDocs,
     query,
     where,
-    onSnapshot,
     getDoc
 } from 'firebase/firestore';
-import {SelectOutlined} from "@ant-design/icons";
 import SelectCategory from "./SelectCategory";
-//import { ScrollView } from 'react-native-virtualized-view'
 
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
@@ -65,7 +61,7 @@ export default function HomeScreen() {
         latitudeDelta: 0.02,
         longitudeDelta: 0.02,
     };
-    const [showPins, setShowPins] = useState(true);
+    const [showPins] = useState(true);
     const [selectedCategories, setSelectedCategories] = useState(new Set());
     const [category, setCategory] = useState('');
     const [tempCategory, setTempCategory] = useState('');
@@ -79,12 +75,14 @@ export default function HomeScreen() {
         Other: '#40E0D0'
     };
 
+    // Checks if user is logged in
     useEffect(() => {
         return onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
         });
     }, []);
 
+    // Request location permission and fetch the current location
     useEffect(() => {
         (async () => {
             let {status} = await Location.requestForegroundPermissionsAsync();
@@ -97,6 +95,7 @@ export default function HomeScreen() {
         })();
     }, []);
 
+    // Fetch and load all pins when the user logs in
     useEffect(() => {
         async function fetchAllPins() {
             setLoading(true);
@@ -107,19 +106,20 @@ export default function HomeScreen() {
         }
 
         fetchAllPins();
-    }, [user]);
+    }, [user]); // Runs when the user state changes
 
+    // Fetch comments for the viewing pin when the view modal is visible
     useEffect(() => {
         if (viewPinModalVisible && viewingPin) {
             fetchComments(viewingPin.id);
         }
-    }, [viewPinModalVisible, viewingPin]);
+    }, [viewPinModalVisible, viewingPin]); // Runs when viewPinModalVisible or viewingPin changes
 
-
+// Checks if the user is owner of the marker
     const isOwner = (marker) => {
         return user?.uid === marker?.userId;
     };
-
+// Function for handling the user pressing a pin
     const pinPress = (markerId) => {
         const marker = markers.find((m) => m.id === markerId);
         if (marker) {
@@ -135,7 +135,7 @@ export default function HomeScreen() {
             }
         }
     };
-
+// Function to save the marker info when you create a pin or update the information of the pin
     const saveMarkerInfo = async () => {
         if (!editingMarker) return;
         const updatedPinData = {
@@ -158,7 +158,7 @@ export default function HomeScreen() {
         setTempCategory(''); // Reset the temporary category
     };
 
-
+// Function for getting the prompt to make a pin when you press on the map
     const handleMapPress = (event) => {
         if (!user) {
             Alert.alert('You must be logged in to place pins.');
@@ -173,6 +173,7 @@ export default function HomeScreen() {
         setNewPinModalVisible(true);
     };
 
+    // Function for saving the new pin
     const handleSaveNewPin = async () => {
         if (!newPinCoordinates) return;
         setNewPinModalVisible(false);
@@ -192,7 +193,7 @@ export default function HomeScreen() {
         }
     };
 
-
+// Function for saving a newly added pin to firestore
     const savePinToFirestore = async (pin) => {
         try {
             const pinsCollectionRef = collection(db, 'pins');
@@ -203,7 +204,7 @@ export default function HomeScreen() {
             console.error('Error saving pin:', error);
         }
     };
-
+// Loading the pins from the firestore database
     const loadPinsFromFirestore = async () => {
         try {
             const pinsCollectionRef = collection(db, 'pins');
@@ -217,7 +218,7 @@ export default function HomeScreen() {
             return [];
         }
     };
-
+// Loading the permanent pins from firestore db
     const loadPermaPins = async () => {
         try {
             const permaPinsCollectionRef = collection(db, 'permaPins');
@@ -233,6 +234,7 @@ export default function HomeScreen() {
         }
     };
 
+    // Function for saving the updated pin information to firestore
     const updatePinInFirestore = async (pinId, updatedPinData) => {
         try {
             const pinRef = doc(db, 'pins', pinId);
@@ -241,6 +243,8 @@ export default function HomeScreen() {
             console.error('Error updating pin:', error);
         }
     };
+
+    // Function to delete a pin from firestore
     const deletePinFromFirestore = async (pinId) => {
         try {
             const pinRef = doc(db, 'pins', pinId);
@@ -250,7 +254,7 @@ export default function HomeScreen() {
             console.error('Error deleting pin:', error);
         }
     };
-
+// Function to delete pin
     const handleDeletePin = async (pinId) => {
         setIsModalVisible(false);
         setLoading(true);
@@ -258,6 +262,7 @@ export default function HomeScreen() {
         setLoading(false);
     };
 
+    // Function for adding a new comment on a pin
     const handleAddComment = async (pinId) => {
         if (!newComment.trim()) {
             Alert.alert("Error", "Comment cannot be empty.");
@@ -298,7 +303,7 @@ export default function HomeScreen() {
         }
     };
 
-
+// Function for fetching the comments of the specific pin in firestore
     const fetchComments = async (pinId) => {
         try {
             const commentsRef = collection(db, 'comments');
@@ -316,6 +321,7 @@ export default function HomeScreen() {
         }
     };
 
+    // Function for deleting a comment
     const handleDeleteComment = async (commentId) => {
         try {
             const commentRef = doc(db, 'comments', commentId);
@@ -328,8 +334,10 @@ export default function HomeScreen() {
         }
     };
 
+    // The different categories of pins
     const options = ['userPins', 'Food', 'Fitness', 'Bars', 'Fun', 'NotFun', 'Other'];
 
+    // Function for managing the categories
     const handlePress = (option) => {
         setSelectedCategories(prev => {
             const newCategories = new Set(prev);
