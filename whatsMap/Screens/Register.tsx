@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, StyleSheet, Modal } from "react-native";
+import React, { useState} from 'react';
+import { ScrollView, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform} from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import {app, db} from "../firebaseConfig";
 import signUpStyle from "../Styles/authStyle";
 import SizedBox from "../Styles/SizedBox";
 import UsernameModal from "./UsernameModal";
-import {doc, getDoc, setDoc} from "firebase/firestore";
-import {auth} from "./HomeMap";
+import {doc, setDoc} from "firebase/firestore";
 
 export default function Register({ navigation }) {
     const styles = signUpStyle;
@@ -14,25 +13,17 @@ export default function Register({ navigation }) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showUsernameModal, setShowUsernameModal] = useState(false);
-    const [userId, setUserId] = useState(null);
+    const [userId] = useState(null);
 
+    // Regex for email and password
     const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isValidPassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~"£¤/=¨`'-_|§€]).{8,}$/.test(password);
 
     const onUpdateUsername = (newUsername) => {
         console.log("New username set:", newUsername);
-        // Perform any other actions you might need after username update
-    };
-    const refreshUserData = async (uid) => {
-        const userDocRef = doc(db, "users", uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
-            setUserId({ ...auth.currentUser, ...userData });  // Combine auth data and user data
-        }
     };
 
-
+// Function for handling the registering of a user
     const handleRegister = async () => {
         if (!isValidEmail(email)) {
             Alert.alert('Invalid Email', 'Please enter a valid email address.');
@@ -51,18 +42,18 @@ export default function Register({ navigation }) {
             const auth = getAuth(app);
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            const defaultUsername = email.split('@')[0];  // Simple transformation, consider making it more unique.
-            await setDoc(doc(db, "users", user.uid), { email, username: defaultUsername });
+            const defaultUsername = email.split('@')[0];
+            await setDoc(doc(db, "users", user.uid), {email, username: defaultUsername});
 
-            // Show the username modal
-            setShowUsernameModal(true);
+            // After successful registration you get navigated to the home page
+            navigation.navigate('Home');
         } catch (error) {
             console.error("Registration failed: ", error);
             Alert.alert('Registration Failed', "Please check your inputs and try again.");
         }
     };
 
-    return (
+        return (
         <ScrollView style={styles.root}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.content}>
                 <Text style={styles.title}>Register New Account</Text>
