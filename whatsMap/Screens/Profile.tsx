@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {deleteUser, getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
-import styles from '../Styles/styles';
+import {styles} from '../Styles/styles';
 import UsernameModal from './UsernameModal';
 import SizedBox from "../Styles/SizedBox";
 import {auth} from "./HomeMap";

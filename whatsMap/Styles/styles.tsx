@@ -237,4 +237,4 @@ const pin_style = StyleSheet.create({
         },
 });
 
-export default styles;
+export {styles, pin_style};
