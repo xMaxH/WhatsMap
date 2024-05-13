@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { db } from "../firebaseConfig";
 import { collection, query, where, onSnapshot  } from 'firebase/firestore';
-import { pinModal, style1 } from "../Styles/style1";
+import { pin_style, styles } from "../Styles/styles";
 import { auth } from "./HomeMap";
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -56,19 +55,19 @@ export default function MyPinsScreen() {
 
     if (loading) {
         return (
-            <View style={style1.loadingOverlay}>
+            <View style={styles.loading_overlay}>
                 <ActivityIndicator size="large" color="#0000ff" />
             </View>
         );
     }
 
     return (
-        <View style={style1.container}>
-            <Text style={style1.textheader}>My Pins</Text>
+        <View style={styles.container}>
+            <Text style={styles.header2}>My Pins</Text>
             {pins.map((pin) => (
-                <View key={pin.id} style={pinModal.modalView}>
-                    <Text style={pinModal.titletext}>{pin.title}</Text>
-                    <Text style={pinModal.subtitletext}>{pin.description}</Text>
+                <View key={pin.id} style={styles.modal_view}>
+                    <Text style={styles.modal_text}>{pin.title}</Text>
+                    <Text style={styles.modal_sub_text}>{pin.description}</Text>
                 </View>
             ))}
         </View>
