@@ -1,14 +1,22 @@
 import React, { useState} from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform} from "react-native";
+import {
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView, View, Pressable
+} from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import {app, db} from "../firebaseConfig";
-import signUpStyle from "../Styles/authStyle";
+import styles, {FG_COLOUR_MUTED} from "../Styles/styles";
 import SizedBox from "../Styles/SizedBox";
 import UsernameModal from "./UsernameModal";
 import {doc, setDoc} from "firebase/firestore";
 
 export default function Register({ navigation }) {
-    const styles = signUpStyle;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -53,44 +61,83 @@ export default function Register({ navigation }) {
         }
     };
 
-        return (
+    return (
         <ScrollView style={styles.root}>
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.content}>
-                <Text style={styles.title}>Register New Account</Text>
-                <SizedBox height={50}/>
-                <TextInput
-                    style={styles.form}
-                    placeholder="Email"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    onChangeText={setEmail}
-                    value={email}
-                />
-                <SizedBox height={50}/>
+            <SafeAreaView style={styles.container}>
+                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                    <Text style={styles.header}>Register New Account</Text>
+                    <View style={styles.line}></View>
+                    <SizedBox height={50}/>
 
-                <TextInput
-                    style={styles.form}
-                    placeholder="Password"
-                    secureTextEntry={true}
-                    onChangeText={setPassword}
-                    value={password}
-                />
-                <SizedBox height={16}/>
+                    <Pressable>
+                    <View style={styles.text_input_container}>
+                            <KeyboardAvoidingView
+                                style={{flex: 1}}
+                                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                            >
+                                <TextInput
+                                    style={styles.text_input}
+                                    placeholder="Email"
+                                    placeholderTextColor={FG_COLOUR_MUTED}
+                                    autoCapitalize="none"
+                                    keyboardType="email-address"
+                                    onChangeText={setEmail}
+                                    value={email}
+                                />
+                            </KeyboardAvoidingView>
+                        </View>
+                    </Pressable>
+                    <View style={styles.line_input}></View>
 
-                <TextInput
-                    style={styles.form}
-                    placeholder="Confirm Password"
-                    secureTextEntry={true}
-                    onChangeText={setConfirmPassword}
-                    value={confirmPassword}
-                />
-                <SizedBox height={16}/>
+                    <SizedBox height={16}/>
 
-                <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonTitle}>Submit</Text>
-                </TouchableOpacity>
-            </KeyboardAvoidingView>
+                    <Pressable>
+                        <View style={styles.text_input_container}>
+                            <KeyboardAvoidingView
+                                style={{flex: 1}}
+                                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                            >
+                                <TextInput
+                                    style={styles.text_input}
+                                    placeholder="Password"
+                                    placeholderTextColor={FG_COLOUR_MUTED}
+                                    autoCapitalize="none"
+                                    onChangeText={setPassword}
+                                    value={password}
+                                />
+                            </KeyboardAvoidingView>
+                        </View>
+                    </Pressable>
+                    <View style={styles.line_input}></View>
 
+                    <SizedBox height={16}/>
+
+                    <Pressable>
+                        <View style={styles.text_input_container}>
+                            <KeyboardAvoidingView
+                                style={{flex: 1}}
+                                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                            >
+                                <TextInput
+                                    style={styles.text_input}
+                                    placeholder="Confirm password"
+                                    placeholderTextColor={FG_COLOUR_MUTED}
+                                    autoCapitalize="none"
+                                    onChangeText={setConfirmPassword}
+                                    value={confirmPassword}
+                                />
+                            </KeyboardAvoidingView>
+                        </View>
+                    </Pressable>
+                    <View style={styles.line_input}></View>
+
+                    <SizedBox height={16}/>
+
+                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                        <Text style={styles.button_text}>Submit</Text>
+                    </TouchableOpacity>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
             {/* Username Modal */}
             {showUsernameModal && (
                 <UsernameModal
