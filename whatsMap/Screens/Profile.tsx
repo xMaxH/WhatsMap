@@ -132,7 +132,8 @@ const Profile = ({ navigation }) => {
                         setVisible={setShowUsernameModal}
                         userId={user.uid}
                         onUpdateUsername={handleUpdateUsername}
-                        navigation={navigation}/>
+                        navigation={navigation}
+                        name={user.username}/>
                     )}
                 </View>
             ) : (

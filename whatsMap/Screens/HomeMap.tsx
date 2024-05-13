@@ -453,7 +453,7 @@ export default function HomeScreen() {
                 <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
                     <View style={pin_style.fs_overlay}>
                         <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                            <View style={pin_style.modalView}>
+                            <View style={pin_style.modal_view}>
                                 {editingMarker && (
                                     <>
                                         {isOwner(editingMarker) ? (
@@ -524,7 +524,7 @@ export default function HomeScreen() {
                 <TouchableWithoutFeedback onPress={() => setNewPinModalVisible(false)}>
                     <View style={pin_style.fs_overlay}>
                         <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                            <View style={pin_style.modalView}>
+                            <View style={pin_style.modal_view}>
                                 <View style={pin_style.row_style}>
                                     <Text style={pin_style.header}>Create a pin</Text>
                                     <AntDesign name="pushpin" size={25} color="red"/>
@@ -577,7 +577,7 @@ export default function HomeScreen() {
                 <TouchableWithoutFeedback onPress={() => setViewPinModalVisible(false)}>
                     <View style={pin_style.fs_overlay}>
                         <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                            <View style={pin_style.modalView}>
+                            <View style={pin_style.modal_view}>
                                 <Text style={pin_style.header}>{viewingPin?.title || "No Title"}</Text>
                                 <Text style={pin_style.header2}>{viewingPin?.description || "No Description"}</Text>
                                <View style={pin_style.row_style}>

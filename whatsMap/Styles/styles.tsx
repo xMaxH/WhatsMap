@@ -328,7 +328,7 @@ const pin_style = StyleSheet.create({
             marginHorizontal: 10,
             marginTop: 5
         },
-    modalView:
+    modal_view:
         {
             margin: 20,
             backgroundColor: BG_COLOUR,
