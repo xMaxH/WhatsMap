@@ -559,7 +559,7 @@ export default function HomeScreen() {
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={()=>{setNewPinModalVisible(false);}}>
                                         <View style={pin_style.button}>
-                                            <Text style={pin_style.button_text}>Submit</Text>
+                                            <Text onPress={handleSaveNewPin} style={pin_style.button_text}>Submit</Text>
                                         </View>
                                     </TouchableOpacity>
                                 </View>
