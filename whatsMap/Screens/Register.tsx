@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import {app, db} from "../firebaseConfig";
-import styles, {FG_COLOUR_MUTED} from "../Styles/styles";
+import {styles, FG_COLOUR_MUTED} from "../Styles/styles";
 import SizedBox from "../Styles/SizedBox";
 import UsernameModal from "./UsernameModal";
 import {doc, setDoc} from "firebase/firestore";
@@ -146,6 +146,7 @@ export default function Register({ navigation }) {
                     userId={userId}
                     onUpdateUsername={onUpdateUsername}
                     navigation={navigation}
+                    name={""}
                 />
             )}
 

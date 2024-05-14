@@ -15,7 +15,7 @@ import {
 
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
-import {pin_style, styles, category_style, FG_COLOUR, FG_COLOUR_MUTED} from "../Styles/styles";
+import {pin_style, styles, category_style, FG_COLOUR_MUTED} from "../Styles/styles";
 import {mapStyle} from "../Styles/mapstyle";
 // @ts-ignore
 import {initializeAuth, onAuthStateChanged, getReactNativePersistence} from 'firebase/auth';

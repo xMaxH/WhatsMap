@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, Button, Alert, Modal, TouchableOpacity} from 'react-native';
+import {View, Text, TextInput, Alert, Modal, TouchableOpacity} from 'react-native';
 import { app } from "../firebaseConfig";
 import { doc, setDoc, getFirestore } from "firebase/firestore";
 import {FG_COLOUR_MUTED, pin_style} from "../Styles/styles";

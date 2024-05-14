@@ -399,4 +399,11 @@ const pin_style = StyleSheet.create({
         },
 });
 
-export {styles, pin_style, category_style, category_menu_style};
+const bar_styles = StyleSheet.create({
+    tab:
+        {
+            backgroundColor: FG_COLOUR,
+        },
+});
+
+export {styles, pin_style, category_style, category_menu_style, bar_styles};
