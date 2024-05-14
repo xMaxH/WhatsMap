@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { db } from "../firebaseConfig";
 import { collection, query, where, onSnapshot  } from 'firebase/firestore';
-import { pin_style, styles } from "../Styles/styles";
+import { styles } from "../Styles/styles";
 import { auth } from "./HomeMap";
 import { onAuthStateChanged } from 'firebase/auth';
 

@@ -10,7 +10,7 @@ import {
     ScrollView,
     Alert
 } from "react-native";
-import styles, {FG_COLOUR_MUTED} from "../Styles/styles";
+import {styles, FG_COLOUR_MUTED} from "../Styles/styles";
 import SizedBox from "../Styles/SizedBox";
 import {
     getAuth,
