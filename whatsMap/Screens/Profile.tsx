@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {deleteUser, getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
-import {style1} from '../Styles/style1';
+import {styles} from '../Styles/styles';
 import UsernameModal from './UsernameModal';
 import SizedBox from "../Styles/SizedBox";
 import {auth} from "./HomeMap";
@@ -108,32 +108,32 @@ const Profile = ({ navigation }) => {
     };
 
     return (
-        <Pressable style={style1.container} onPress={() => setShowUsernameModal(false)}>
+        <Pressable style={styles.container} onPress={() => setShowUsernameModal(false)}>
             {user ? ( // Displays user info
                 <View>
-                    <TouchableOpacity
-                        style={style1.usernamebtn}
-                        onPress={() => setShowUsernameModal(true)}>
-                        <Text>Update Username</Text>
-                    </TouchableOpacity>
 
-                    <Text style={style1.text1}>Welcome, {user.username || user.username}</Text>
+                    <Text style={styles.header2}>Welcome, {user.username || user.username}</Text>
 
                     <SizedBox height={60}/>
-                    <TouchableOpacity onPress={handleLogout} style={style1.Logoutbtn}>
-                        <Text style={style1.text2}>Logout</Text>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => setShowUsernameModal(true)}>
+                        <Text style={styles.button_text}>Update Username</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleDeleteAccount} style={style1.Deleteaccountbtn}>
-                        <Text style={style1.text2}>Delete Account</Text>
+                    <TouchableOpacity onPress={handleLogout} style={styles.button}>
+                        <Text style={styles.button_text}>Logout</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleDeleteAccount} style={styles.button_delete}>
+                        <Text style={styles.button_text}>Delete Account</Text>
                     </TouchableOpacity>
                     {showUsernameModal && (
                         <UsernameModal
-                            visible={showUsernameModal}
-                            setVisible={setShowUsernameModal}
-                            userId={user.uid}
-                            onUpdateUsername={handleUpdateUsername}
-                            navigation={navigation}
-                        />
+                        visible={showUsernameModal}
+                        setVisible={setShowUsernameModal}
+                        userId={user.uid}
+                        onUpdateUsername={handleUpdateUsername}
+                        navigation={navigation}
+                        name={user.username}/>
                     )}
                 </View>
             ) : (

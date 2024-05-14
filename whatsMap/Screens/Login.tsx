@@ -10,7 +10,7 @@ import {
     ScrollView,
     Alert
 } from "react-native";
-import loginStyle from "../Styles/authStyle";
+import {styles, FG_COLOUR_MUTED} from "../Styles/styles";
 import SizedBox from "../Styles/SizedBox";
 import {
     getAuth,
@@ -21,7 +21,6 @@ import React, {useState} from 'react';
 export default function Login({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const styles = loginStyle
 
     // Function that handles the login for users
     const login = async () => {
@@ -41,64 +40,57 @@ export default function Login({navigation}) {
         }
     };
 
-
     return (
         <ScrollView style={styles.root}>
-            <SafeAreaView style={styles.safeAreaView}>
-                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
-                    <Text style={styles.title}>Login</Text>
-                    <SizedBox height={100}/>
+            <SafeAreaView style={styles.container}>
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                    <Text style={styles.header}>Login</Text>
 
-                    <SizedBox height={50}/>
+                    <View style={styles.line}></View>
 
-                    <View style={styles.lineContainer}>
-                        <View style={styles.line}/>
-                        <Text style={styles.text}>x</Text>
-                        <View style={styles.line}/>
-                    </View>
-
-                    <SizedBox height={50}/>
+                    <SizedBox height={75}/>
 
                     <Pressable>
-                        <View style={styles.form}>
-                            <Text style={styles.label}>Email</Text>
+                        <View style={styles.text_input_container}>
                             <KeyboardAvoidingView
                                 style={{flex: 1}}
                                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                             >
                                 <TextInput
                                     autoCapitalize="none"
+                                    placeholder={"Email"}
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     // autoCompleteType="email"
                                     autoCorrect={false}
                                     keyboardType="email-address"
                                     returnKeyType="next"
-                                    style={styles.textInput}
+                                    style={styles.text_input}
                                     textContentType="username"
                                     value={email}
                                     onChangeText={(text) => setEmail(text)}
                                 />
                             </KeyboardAvoidingView>
-
                         </View>
                     </Pressable>
-
+                    <View style={styles.line_input}></View>
 
                     <SizedBox height={16}/>
 
                     <Pressable>
-                        <View style={styles.form}>
-                            <Text style={styles.label}>Password</Text>
+                        <View style={styles.text_input_container}>
                             <KeyboardAvoidingView
                                 style={{flex: 1}}
                                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 
                                 <TextInput
+                                    placeholder={"Password"}
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     autoCapitalize="none"
                                     //autoCompleteType="password"
                                     autoCorrect={false}
                                     returnKeyType="done"
                                     secureTextEntry
-                                    style={styles.textInput}
+                                    style={styles.text_input}
                                     textContentType="password"
                                     value={password}
                                     onChangeText={(text) => setPassword(text)}
@@ -107,20 +99,19 @@ export default function Login({navigation}) {
 
                         </View>
                     </Pressable>
-                    <SizedBox height={16}/>
+                    <View style={styles.line_input}></View>
 
-                    <SizedBox height={16}/>
+                    <SizedBox height={32}/>
 
                     <TouchableOpacity onPress={login}>
                         <View style={styles.button}>
-                            <Text style={styles.buttonTitle}>Login</Text>
+                            <Text style={styles.button_text}>Login</Text>
                         </View>
                     </TouchableOpacity>
-                    <SizedBox height={20}/>
 
                     <TouchableOpacity onPress={() => navigation.navigate('Register')} >
                         <View style={styles.button}>
-                            <Text style={styles.buttonTitle}>
+                            <Text style={styles.button_text}>
                                 Register
                             </Text>
                         </View>

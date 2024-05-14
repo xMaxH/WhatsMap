@@ -15,7 +15,7 @@ import {
 
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
-import {pinModal, style1} from "../Styles/style1";
+import {pin_style, styles, category_style, FG_COLOUR_MUTED} from "../Styles/styles";
 import {mapStyle} from "../Styles/mapstyle";
 // @ts-ignore
 import {initializeAuth, onAuthStateChanged, getReactNativePersistence} from 'firebase/auth';
@@ -362,11 +362,11 @@ export default function HomeScreen() {
 
     return (
         <View style={{flex: 1, marginTop: 40}}>
-            <View style={style1.chooseCategory}>
+            <View style={category_style.root}>
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={true}
-                    style={style1.scrollView}
+                    style={category_style.scroll_view}
                     contentContainerStyle={{
                         alignItems: 'center',
                     }}
@@ -375,7 +375,7 @@ export default function HomeScreen() {
                         <TouchableOpacity
                             key={option}
                             style={[
-                                style1.optionBox,
+                                category_style.modal_option_box,
                                 {backgroundColor: categoryColors[option]},
                                 selectedCategories.has(option) ? {opacity: 1} : {opacity: 0.5},
                                 option === 'userPins' && {backgroundColor: '#000', borderColor: '#fff'},
@@ -383,14 +383,13 @@ export default function HomeScreen() {
                             onPress={() => handlePress(option)}
                         >
                             <Text
-                                style={[style1.textCategory, option === 'userPins' && {color: '#fff'}]}>{option}</Text>
+                                style={[category_style.modal_text, option === 'userPins' && {color: '#fff'}]}>{option}</Text>
                         </TouchableOpacity>
 
 
                     ))}
                 </ScrollView>
             </View>
-
 
             <MapView
                 style={{flex: 1}}
@@ -441,7 +440,7 @@ export default function HomeScreen() {
 
 
             {loading && (
-                <View style={style1.loadingOverlay}>
+                <View style={styles.loading_overlay}>
                     <ActivityIndicator size={300} color="#0175FF"/>
                 </View>
             )}
@@ -452,50 +451,49 @@ export default function HomeScreen() {
                 onRequestClose={() => setIsModalVisible(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
-                    <View style={pinModal.fullScreenOverlay}>
+                    <View style={pin_style.fs_overlay}>
                         <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                            <View style={pinModal.modalView}>
+                            <View style={pin_style.modal_view}>
                                 {editingMarker && (
                                     <>
                                         {isOwner(editingMarker) ? (
                                             <>
-                                                <View style={pinModal.iconpin}>
-                                                    <Text style={pinModal.titletext}>Edit pin</Text>
+                                                <View style={pin_style.row_style}>
+                                                    <Text style={pin_style.header}>Edit pin</Text>
                                                     <AntDesign name="pushpin" size={25} color="red"/>
                                                 </View>
-                                                <Text style={pinModal.subtitletext}>Edit pin name:</Text>
+                                                <Text style={pin_style.header2}>Edit pin name:</Text>
                                                 <TextInput
-                                                    style={pinModal.input}
+                                                    style={pin_style.input_title}
                                                     placeholder="Title"
                                                     onChangeText={setTempTitle}
                                                     value={tempTitle}
                                                     maxLength={30}
                                                 />
-                                                <Text style={pinModal.subtitletext}>Edit description:</Text>
+                                                <Text style={pin_style.header2}>Edit description:</Text>
                                                 <TextInput
-                                                    style={pinModal.inputdescription}
+                                                    style={pin_style.input_desc}
                                                     placeholder="Description"
                                                     onChangeText={setTempDescription}
                                                     value={tempDescription}
                                                     maxLength={300}
                                                 />
-                                                <Text style={pinModal.subtitletext}>Edit Category:</Text>
+                                                <Text style={pin_style.header2}>Edit Category:</Text>
 
                                                 <View>
                                                     <SelectCategory setCategory={setTempCategory}
                                                                     selectedCategory={tempCategory}/>
                                                 </View>
 
-
-                                                <View style={pinModal.buttonsavecanellineup}>
-                                                    <View style={pinModal.buttonspacebetween}>
+                                                <View style={pin_style.row_style}>
+                                                    <View style={pin_style.space_between}>
                                                         <Button
                                                             title="Save"
                                                             color="green"
                                                             onPress={saveMarkerInfo}
                                                         />
                                                     </View>
-                                                    <View style={pinModal.buttonspacebetween}>
+                                                    <View style={pin_style.space_between}>
                                                         <Button
                                                             title="Delete pin"
                                                             color="red"
@@ -506,8 +504,8 @@ export default function HomeScreen() {
                                             </>
                                         ) : (
                                             <>
-                                                <Text style={pinModal.input}>{tempTitle}</Text>
-                                                <Text style={pinModal.input}>{tempDescription}</Text>
+                                                <Text style={pin_style.input_title}>{tempTitle}</Text>
+                                                <Text style={pin_style.input_desc}>{tempDescription}</Text>
                                             </>
                                         )}
                                     </>
@@ -524,26 +522,28 @@ export default function HomeScreen() {
                 onRequestClose={() => setNewPinModalVisible(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setNewPinModalVisible(false)}>
-                    <View style={pinModal.fullScreenOverlay}>
+                    <View style={pin_style.fs_overlay}>
                         <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                            <View style={pinModal.modalView}>
-                                <View style={pinModal.iconpin}>
-                                    <Text style={pinModal.titletext}>Create a pin</Text>
+                            <View style={pin_style.modal_view}>
+                                <View style={pin_style.row_style}>
+                                    <Text style={pin_style.header}>Create a pin</Text>
                                     <AntDesign name="pushpin" size={25} color="red"/>
                                 </View>
-                                <Text style={pinModal.subtitletext}>Pin name:</Text>
+                                <Text style={pin_style.header2}>Pin name:</Text>
                                 <TextInput
-                                    style={pinModal.input}
+                                    style={pin_style.input_title}
                                     placeholder="Title"
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     onChangeText={setTempTitle}
                                     value={tempTitle}
                                     maxLength={30}
                                 />
-                                <Text style={pinModal.subtitletext}>Add description:</Text>
+                                <Text style={pin_style.header2}>Add description:</Text>
                                 <TextInput
 
-                                    style={pinModal.inputdescription}
+                                    style={pin_style.input_desc}
                                     placeholder="Description"
+                                    placeholderTextColor={FG_COLOUR_MUTED}
                                     onChangeText={setTempDescription}
                                     value={tempDescription}
                                     maxLength={300}
@@ -551,21 +551,17 @@ export default function HomeScreen() {
 
                                 <SelectCategory setCategory={setCategory}/>
 
-
-                                <View style={pinModal.buttonsavecanellineup}>
-                                    <View style={pinModal.buttonspacebetween}>
-                                        <Button
-                                            title="Cancel"
-                                            color="red"
-                                            onPress={() => setNewPinModalVisible(false)}
-                                        />
-                                    </View>
-                                    <View style={pinModal.buttonspacebetween}>
-                                        <Button
-                                            title="Submit"
-                                            onPress={handleSaveNewPin}
-                                        />
-                                    </View>
+                                <View style={pin_style.row_style}>
+                                    <TouchableOpacity onPress={()=>{setNewPinModalVisible(false);}}>
+                                        <View style={pin_style.button_delete}>
+                                            <Text style={pin_style.button_text}>Cancel</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={()=>{setNewPinModalVisible(false);}}>
+                                        <View style={pin_style.button}>
+                                            <Text style={pin_style.button_text}>Submit</Text>
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         </TouchableWithoutFeedback>
@@ -579,20 +575,20 @@ export default function HomeScreen() {
                 onRequestClose={() => setViewPinModalVisible(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setViewPinModalVisible(false)}>
-                    <View style={pinModal.fullScreenOverlay}>
+                    <View style={pin_style.fs_overlay}>
                         <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                            <View style={pinModal.modalView}>
-                                <Text style={pinModal.titletext}>{viewingPin?.title || "No Title"}</Text>
-                                <Text style={pinModal.subtitletext}>{viewingPin?.description || "No Description"}</Text>
-                               <View style={style1.commentbtn}>
+                            <View style={pin_style.modal_view}>
+                                <Text style={pin_style.header}>{viewingPin?.title || "No Title"}</Text>
+                                <Text style={pin_style.header2}>{viewingPin?.description || "No Description"}</Text>
+                               <View style={pin_style.row_style}>
                                    <TextInput
-                                       style={pinModal.input}
+                                       style={pin_style.input_title}
                                        placeholder="Add a comment..."
                                        value={newComment}
                                        onChangeText={setNewComment}
                                        maxLength={300}
                                    />
-                                  <View style={style1.submitcomment}>
+                                  <View style={{width: 80, height: 90}}>
                                       <Button
                                           title="Post"
                                           onPress={() => {

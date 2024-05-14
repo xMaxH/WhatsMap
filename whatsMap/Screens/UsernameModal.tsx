@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, Button, Alert, Modal } from 'react-native';
+import {View, Text, TextInput, Alert, Modal, TouchableOpacity} from 'react-native';
 import { app } from "../firebaseConfig";
 import { doc, setDoc, getFirestore } from "firebase/firestore";
+import {FG_COLOUR_MUTED, pin_style} from "../Styles/styles";
 
-export default function UsernameModal({ visible, setVisible, userId, navigation, onUpdateUsername }) {
+export default function UsernameModal({ visible, setVisible, userId, navigation, onUpdateUsername, name }) {
     const [username, setUsername] = useState('');
 
     // In UsernameModal
@@ -27,11 +28,6 @@ export default function UsernameModal({ visible, setVisible, userId, navigation,
         }
     };
 
-
-
-
-
-
     return (
         <Modal
             visible={visible}
@@ -39,19 +35,19 @@ export default function UsernameModal({ visible, setVisible, userId, navigation,
             transparent={true}
             onRequestClose={() => setVisible(false)}
         >
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '80%' }}>
-                    <Text>Create Your Username</Text>
+            <View style={pin_style.fs_overlay}>
+                <View style={pin_style.modal_view}>
+                    <Text style={pin_style.header2}>Edit Your Username</Text>
                     <TextInput
-                        style={{ borderWidth: 1, padding: 10, marginVertical: 10 }}
-                        placeholder="Enter your username"
+                        style={pin_style.input_title}
+                        placeholder={name}
+                        placeholderTextColor={FG_COLOUR_MUTED}
                         onChangeText={setUsername}
                         value={username}
                     />
-                    <Button
-                        title="Submit"
-                        onPress={handleUsernameCreation}
-                    />
+                    <TouchableOpacity onPress={handleUsernameCreation} style={pin_style.button}>
+                        <Text style={pin_style.button_text}>Submit</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </Modal>

@@ -9,6 +9,7 @@ import HomeScreen, { auth } from "./Screens/HomeMap";
 import Profile from "./Screens/Profile";
 import Register from "./Screens/Register";
 import MyPins from "./Screens/MyPins";
+import {bar_styles} from "./Styles/styles";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -25,7 +26,8 @@ export default function App() {
 
     // The buttons for the bottom navbar
     const MainTabScreen = () => (
-        <Tab.Navigator initialRouteName={'Home'}>
+        <Tab.Navigator initialRouteName={'Home'}
+        screenOptions={() => ({tabBarStyle: bar_styles.tab})}>
             {!user && (
                 <Tab.Screen name="Login" component={Login}
                             options={{
@@ -49,6 +51,7 @@ export default function App() {
                 <Tab.Screen name="Profile" component={Profile}
                             options={{
                                 tabBarLabel: 'Profile',
+                                headerTintColor: 'black',
                                 tabBarIcon: () => (
                                     <Icon name="account" size={25} />
                                 )
@@ -70,7 +73,7 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Navigator screenOptions={{ headerShown: false, headerStyle: bar_styles.tab }}>
                 <Stack.Screen name="Main" component={MainTabScreen} />
                 <Stack.Screen name="Register" component={Register} options={{ headerShown: true}}/>
                 <Stack.Screen name="MyPins" component={MyPins} options={{ headerShown: true}}/>

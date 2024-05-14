@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { stylesCategory } from "../Styles/categoryStyle";
+import {category_menu_style, pin_style} from "../Styles/styles";
 
 type Option = {
     label: string;
@@ -45,9 +45,9 @@ const SelectCategory: React.FC<SelectCategoryProps> = ({ setCategory, selectedCa
     };
 
     return (
-        <View style={stylesCategory.container}>
-            <TouchableOpacity onPress={() => setModalVisible(true)} style={stylesCategory.button}>
-                <Text>{selectedValue ? options.find(o => o.value === selectedValue)?.label : 'Select Category'}</Text>
+        <View style={category_menu_style.root}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={category_menu_style.button}>
+                <Text style={pin_style.button_text}>{selectedValue ? options.find(o => o.value === selectedValue)?.label : 'Select Category'}</Text>
             </TouchableOpacity>
 
             <Modal
@@ -57,15 +57,15 @@ const SelectCategory: React.FC<SelectCategoryProps> = ({ setCategory, selectedCa
                 onRequestClose={() => setModalVisible(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={stylesCategory.modalOverlay}>
-                        <View style={stylesCategory.modalView}>
+                    <View style={category_menu_style.modal_overlay}>
+                        <View style={category_menu_style.modal_view}>
                             {options.map(option => (
                                 <TouchableOpacity
                                     key={option.value}
-                                    style={stylesCategory.option}
+                                    style={category_menu_style.option}
                                     onPress={() => handleSelect(option.value)}
                                 >
-                                    <Text style={stylesCategory.text}>{option.label}</Text>
+                                    <Text style={category_menu_style.choice_text}>{option.label}</Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
