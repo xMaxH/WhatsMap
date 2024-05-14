@@ -166,6 +166,17 @@ const styles = StyleSheet.create({
             fontWeight: 'bold',
             color: BG_COLOUR,
         },
+    commentName:
+        {
+            color:FG_COLOUR,
+            fontSize:16,
+        },
+    commentText:
+        {
+            color:"white",
+            fontSize:13,
+            alignItems:"center",
+        }
 });
 
 const category_menu_style = StyleSheet.create({

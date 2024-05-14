@@ -609,10 +609,10 @@ export default function HomeScreen() {
                                         keyExtractor={(item) => item.id}
                                         renderItem={({item}) => (
                                             <View style={{marginBottom: 10}}>
-                                                <Text style={{fontWeight: 'bold'}}>{item.username || 'Anonymous'}</Text>
-                                                <Text>{item.text}</Text>
+                                                <Text style={styles.commentName}>{item.username || 'Anonymous'}</Text>
+                                                <Text style={styles.commentText}>{item.text}</Text>
                                                 {/* The timestamp */}
-                                                <Text style={{fontSize: 12, color: 'grey'}}>
+                                                <Text style={{fontSize: 10, color: 'grey'}}>
                                                     {item.timestamp.toDate().toLocaleString()}
                                                 </Text>
                                                 {user && user.uid === item.userId && (
