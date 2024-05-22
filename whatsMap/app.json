@@ -18,13 +18,25 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "whats.mapp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDsoHGDopPslNJ0Ck3U7vkih1uQwdniKw4"
+        }
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f9e9fecc-084a-4552-847d-2704a377abf8"
+      }
     }
   }
 }

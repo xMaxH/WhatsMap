@@ -3,7 +3,7 @@ import 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDsoHGDopPslNJ0Ck3U7vkih1uQwdniKw4",
+    apiKey: "AIzaSyCSbdOhOmSJnN7RBxWv9qM_zQaf0km2mPg",
     authDomain: "whatsmap-c8cd1.firebaseapp.com",
     projectId: "whatsmap-c8cd1",
     storageBucket: "whatsmap-c8cd1.appspot.com",
